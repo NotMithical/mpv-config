@@ -2,7 +2,7 @@
 -- License: BSD 2-Clause License
 -- Creator: Eisa AlAwadhi
 -- Project: SmartCopyPaste
--- Version: 3.1
+-- Version: 3.2.1
 
 local o = {
 ---------------------------USER CUSTOMIZATION SETTINGS---------------------------
@@ -46,7 +46,7 @@ local o = {
 	["ctrl+alt+v", "ctrl+alt+V", "meta+alt+v", "meta+alt+V"]
 	]], --Keybind that will be used to paste based on the paste behavior specified
 	paste_protocols=[[
-	["https?://", "magnet:", "rtmp:"]
+	["https?://", "magnet:", "rtmp:", "file:"]
 	]], --add above (after a comma) any protocol you want paste to work with; e.g: ,'ftp://'. Or set it as "" by deleting all defined protocols to make paste works with any protocol.
 	paste_extensions=[[
 	["ac3", "a52", "eac3", "mlp", "dts", "dts-hd", "dtshd", "true-hd", "thd", "truehd", "thd+ac3", "tta", "pcm", "wav", "aiff", "aif",  "aifc", "amr", "awb", "au", "snd", "lpcm", "yuv", "y4m", "ape", "wv", "shn", "m2ts", "m2t", "mts", "mtv", "ts", "tsv", "tsa", "tts", "trp", "adts", "adt", "mpa", "m1a", "m2a", "mp1", "mp2", "mp3", "mpeg", "mpg", "mpe", "mpeg2", "m1v", "m2v", "mp2v", "mpv", "mpv2", "mod", "tod", "vob", "vro", "evob", "evo", "mpeg4", "m4v", "mp4", "mp4v", "mpg4", "m4a", "aac", "h264", "avc", "x264", "264", "hevc", "h265", "x265", "265", "flac", "oga", "ogg", "opus", "spx", "ogv", "ogm", "ogx", "mkv", "mk3d", "mka", "webm", "weba", "avi", "vfw", "divx", "3iv", "xvid", "nut", "flic", "fli", "flc", "nsv", "gxf", "mxf", "wma", "wm", "wmv", "asf", "dvr-ms", "dvr", "wtv", "dv", "hdv", "flv","f4v", "f4a", "qt", "mov", "hdmov", "rm", "rmvb", "ra", "ram", "3ga", "3ga2", "3gpp", "3gp", "3gp2", "3g2", "ay", "gbs", "gym", "hes", "kss", "nsf", "nsfe", "sap", "spc", "vgm", "vgz", "m3u", "m3u8", "pls", "cue",
@@ -358,24 +358,42 @@ function parse_clipboard(text)
 	local clip, clip_file, clip_time, pre_attribute
 	local clip_table = {}
 	clip = text
-	
-	for c in clip:gmatch("[^\n\r+]+") do
+
+
+	for c in clip:gmatch("[^\n\r]+") do --3.2.1# fix for #80 , accidentally additional "+" was added to the gmatch
 		local c_pre_attribute, c_clip_file, c_clip_time, c_clip_extension
 		c = make_raw(c)
 		
-		c_pre_attribute = get_time_attribute(c)
-		if string.match(c, '(.*)'..c_pre_attribute) then
-			c_clip_file = string.match(c, '(.*)'..c_pre_attribute)
-			c_clip_time = tonumber(string.match(c, c_pre_attribute..'(%d*%.?%d*)'))
-		elseif string.match(c, '^\"(.*)\"$') then
-			c_clip_file = string.match(c, '^\"(.*)\"$')
-		else
-			c_clip_file = c
+		if starts_protocol(protocols, c) then --3.2# handle protocols to allow for space as a seperator
+			for c_protocols in c:gmatch("[^%s]+") do --3.2# loop iterator using space
+				if starts_protocol(protocols, c_protocols) then --3.2# check if it starts with protocols again after a space
+					c_pre_attribute = get_time_attribute(c)
+					if string.match(c, '(.*)'..c_pre_attribute) then
+						c_clip_file = string.match(c_protocols, '(.*)'..c_pre_attribute)
+						c_clip_time = tonumber(string.match(c_protocols, c_pre_attribute..'(%d*%.?%d*)'))
+					elseif string.match(c, '^\"(.*)\"$') then
+						c_clip_file = string.match(c, '^\"(.*)\"$')
+					else
+						c_clip_file = c_protocols
+					end			
+					c_clip_extension = get_extension(c_clip_file)
+					table.insert(clip_table, {c_clip_file, c_clip_time, c_clip_extension})
+				end
+			end
+		else --3.2# otherwise continue as usual with new line seperators only
+			c_pre_attribute = get_time_attribute(c)
+			if string.match(c, '(.*)'..c_pre_attribute) then
+				c_clip_file = string.match(c, '(.*)'..c_pre_attribute)
+				c_clip_time = tonumber(string.match(c, c_pre_attribute..'(%d*%.?%d*)'))
+			elseif string.match(c, '^\"(.*)\"$') then
+				c_clip_file = string.match(c, '^\"(.*)\"$')
+			else
+				c_clip_file = c
+			end
+			
+			c_clip_extension = get_extension(c_clip_file)
+			table.insert(clip_table, {c_clip_file, c_clip_time, c_clip_extension})
 		end
-		
-		c_clip_extension = get_extension(c_clip_file)
-		
-		table.insert(clip_table, {c_clip_file, c_clip_time, c_clip_extension})
 	end
 
 	clip = make_raw(clip)
