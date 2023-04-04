@@ -1,4 +1,4 @@
-local cachePath = "G:\\Portable Utilities\\MPV\\ytdlp_playlist_temp_cache"
+local cachePath = "C:\\Users\\unsha\\MPVStable\\portable_config\\ytdlp_playlist_temp_cache"
 
 local nextIndex
 local caught = true
