@@ -2,8 +2,8 @@
 
 var options = {
   enable_faster_speed_over_cache_seconds: 0.6,
-  disable_faster_speed_under_cache_seconds: 0.3,
-  faster_speed: 1.015,
+  disable_faster_speed_under_cache_seconds: 0.5,
+  faster_speed: 1.1,
   toggle_stream_cache_reduction_shortcut: 'a'
 }
 mp.options.read_options(options, "stream_cache_reduce")
