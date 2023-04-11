@@ -6,6 +6,9 @@
 local opt = require 'mp.options'
 local utils = require 'mp.utils'
 
+local ON = false
+local ranges = nil
+
 local options = {
 	server = "https://sponsor.ajay.app/api/skipSegments",
 
@@ -18,10 +21,10 @@ local options = {
 
 opt.read_options(options)
 
-function getranges(url)
+function get_ranges(youtube_id, url)
 	local luacurl_available, cURL = pcall(require,'cURL')
 
-	local res = ""
+	local res = nil
 	if not(luacurl_available) then -- if Lua-cURL is not available on this system
 		local sponsors = mp.command_native{
 			name = "subprocess",
@@ -40,22 +43,26 @@ function getranges(url)
 		res = table.concat(buf)
 	end
 
-	local json = utils.parse_json(res)
-	if options.hash == "true" and json ~= nil then
-		for _, i in pairs(json) do
-			if i.videoID == youtube_id then
-				return i.segments
+	if res then
+		local json = utils.parse_json(res)
+		if type(json) == "table" then
+			if options.hash == "true" then
+				for _, i in pairs(json) do
+					if i.videoID == youtube_id then
+						return i.segments
+					end
+				end
+			else
+				return json
 			end
 		end
-	else
-		return json
 	end
 
 	return nil
 end
 
 function skip_ads(name,pos)
-	if pos ~= nil then
+	if pos then
 		for _, i in pairs(ranges) do
 			v = i.segment[2]
 			if i.segment[1] <= pos and v > pos then
@@ -69,7 +76,6 @@ function skip_ads(name,pos)
 			end
 		end
 	end
-	return
 end
 
 function file_loaded()
@@ -86,10 +92,11 @@ function file_loaded()
 		"^ytdl://([%w-_]+)$",
 		"-([%w-_]+)%."
 	}
-	youtube_id = nil
+	local youtube_id = nil
 	local purl = mp.get_property("metadata/by-key/PURL", "")
 	for i,url in ipairs(urls) do
 		youtube_id = youtube_id or string.match(video_path, url) or string.match(video_referer, url) or string.match(purl, url)
+		if youtube_id then break end
 	end
 
 	if not youtube_id or string.len(youtube_id) < 11 then return end
@@ -108,13 +115,12 @@ function file_loaded()
 		url = ("%s?videoID=%s&categories=[%s]"):format(options.server, youtube_id, options.categories)
 	end
 
-	ranges = getranges(url)
-	if ranges ~= nil then
+	ranges = get_ranges(youtube_id, url)
+	if ranges then
 		ON = true
 		mp.add_key_binding("b","sponsorblock",toggle)
 		mp.observe_property("time-pos", "native", skip_ads)
 	end
-	return
 end
 
 function end_file()
@@ -129,12 +135,11 @@ function toggle()
 		mp.unobserve_property(skip_ads)
 		mp.osd_message("[sponsorblock] off")
 		ON = false
-		return
+	else
+		mp.observe_property("time-pos", "native", skip_ads)
+		mp.osd_message("[sponsorblock] on")
+		ON = true
 	end
-	mp.observe_property("time-pos", "native", skip_ads)
-	mp.osd_message("[sponsorblock] on")
-	ON = true
-	return
 end
 
 mp.register_event("file-loaded", file_loaded)
