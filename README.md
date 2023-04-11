@@ -70,3 +70,7 @@ My personal configuration files, scripts and shaders for MPV
 **[hdr-toys](https://github.com/natural-harmonia-gropius/hdr-toys)**
 
 **[KrigBilateral](https://gist.github.com/igv/a015fc885d5c22e6891820ad89555637)**
+
+**[Non-local means](https://github.com/AN3223/dotfiles/tree/master/.config/mpv/shaders)**
+
+**[Film Grain](https://github.com/haasn/gentoo-conf/tree/xor/home/nand/.mpv/shaders)**
