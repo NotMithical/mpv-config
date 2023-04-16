@@ -51,6 +51,8 @@ My personal configuration files, scripts and shaders for MPV
 
 **[FSRCNN](https://github.com/igv/FSRCNN-TensorFlow)**
 
+**[FSRCNNX_x2_56](https://github.com/hooke007/MPV_lazy/blob/main/portable_config/shaders/FSRCNNX_x2_56_16_4_1.glsl)**
+
 **[nnedi and ravu](https://github.com/bjin/mpv-prescalers)**
 
 **[SSimSuperRes](https://gist.github.com/igv/2364ffa6e81540f29cb7ab4c9bc05b6b)**
@@ -74,3 +76,5 @@ My personal configuration files, scripts and shaders for MPV
 **[Non-local means](https://github.com/AN3223/dotfiles/tree/master/.config/mpv/shaders)**
 
 **[Film Grain](https://github.com/haasn/gentoo-conf/tree/xor/home/nand/.mpv/shaders)**
+
+**[Super XBR](https://github.com/dyphire/mpv-config/tree/master/shaders/superxbr)**
