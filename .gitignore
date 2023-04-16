@@ -1,6 +1,6 @@
-*/shadercache/
-*/ytdlp_playlist_temp_cache/
-*/shadercache/
-*/icc_cache/
-*/watch_later/
+**/shadercache/
+**/ytdlp_playlist_temp_cache/
+**/shadercache/
+**/icc_cache/
+**/watch_later/
 *.cache
