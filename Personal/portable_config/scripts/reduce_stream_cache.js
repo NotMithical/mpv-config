@@ -1,21 +1,46 @@
 // To enable this script run `mpv --script-opts=enable-stream-cache-reduction=true`
 
 var options = {
-  enable_faster_speed_over_cache_seconds: 0.6,
-  disable_faster_speed_under_cache_seconds: 0.5,
-  faster_speed: 1.1,
+  enable_faster_speed_over_cache_seconds: 1.0,
+  disable_faster_speed_under_cache_seconds: 0.6,
+  enable_slower_speed_under_cache_seconds: 0.4,
+  disable_slower_speed_over_cache_seconds: 0.5,
+  faster_speed: 1.2,
+  slower_speed: 0.7,
   toggle_stream_cache_reduction_shortcut: 'a'
 }
 mp.options.read_options(options, "stream_cache_reduce")
 
-var decide_to_change_speed = function(name, current_cache_seconds) {
+//var decide_to_change_speed = function(name, current_cache_seconds) {
+//  var speed = mp.get_property_native('speed');
+//  if (current_cache_seconds >= options['enable_faster_speed_over_cache_seconds'] && speed === 1) {
+//    set_speed(options['faster_speed'])
+//  } else if (current_cache_seconds <= options['disable_faster_speed_under_cache_seconds'] && speed > 1) {
+//    set_speed(1)
+//  }
+//}
+
+var decide_to_change_speed = function(name, current_cache_seconds)
+{
   var speed = mp.get_property_native('speed');
-  if (current_cache_seconds >= options['enable_faster_speed_over_cache_seconds'] && speed === 1) {
+  
+  if (current_cache_seconds >= options['enable_faster_speed_over_cache_seconds'])
+  {
     set_speed(options['faster_speed'])
-  } else if (current_cache_seconds <= options['disable_faster_speed_under_cache_seconds'] && speed > 1) {
-    set_speed(1)
   }
+  
+  else if (current_cache_seconds <= options['enable_slower_speed_under_cache_seconds'])
+  {
+	set_speed(options['slower_speed'])
+  }
+  
+  else if (current_cache_seconds < options['enable_faster_speed_over_cache_seconds'] && current_cache_seconds > options['enable_slower_speed_under_cache_seconds'] && speed != 1)
+  {
+	  set_speed(1)
+  }
+  
 }
+
 
 var set_speed = function(speed) {
   mp.set_property('speed', speed)
