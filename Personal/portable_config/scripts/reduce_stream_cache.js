@@ -31,7 +31,7 @@ var decide_to_change_speed = function(name, current_cache_seconds)
   
   else if (current_cache_seconds <= options['enable_slower_speed_under_cache_seconds'])
   {
-	set_speed(options['slower_speed'])
+	set_speed(current_cache_seconds)
   }
   
   else if (current_cache_seconds < options['enable_faster_speed_over_cache_seconds'] && current_cache_seconds > options['enable_slower_speed_under_cache_seconds'] && speed != 1)
@@ -40,6 +40,13 @@ var decide_to_change_speed = function(name, current_cache_seconds)
   }
   
 }
+
+//var decide_to_change_speed = function(name, current_cache_seconds)
+//{
+//  var speed = mp.get_property_native('speed');
+//
+//  set_speed(current_cache_seconds)
+//}
 
 
 var set_speed = function(speed) {
