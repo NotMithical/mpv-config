@@ -15,8 +15,8 @@
 //!PARAM L_sdr
 //!TYPE float
 //!MINIMUM 0
-//!MAXIMUM 5000
-203
+//!MAXIMUM 1000
+203.0
 
 //!PARAM sigma
 //!TYPE float

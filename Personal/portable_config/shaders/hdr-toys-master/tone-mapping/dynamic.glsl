@@ -7,8 +7,8 @@
 //!PARAM L_sdr
 //!TYPE float
 //!MINIMUM 0
-//!MAXIMUM 5000
-203
+//!MAXIMUM 1000
+203.0
 
 //!PARAM CONTRAST_sdr
 //!TYPE float
@@ -16,17 +16,23 @@
 //!MAXIMUM 1000000
 1000.0
 
-//!BUFFER FRAME_DATA
+//!PARAM temporal_stable_frames
+//!TYPE uint
+//!MINIMUM 0
+//!MAXIMUM 120
+8
+
+//!BUFFER MINMAX
 //!VAR uint L_min
 //!VAR uint L_max
 //!STORAGE
 
 //!BUFFER TEMPORAL_MAX
-//!VAR uint L_max_t[32]
+//!VAR uint L_max_t[128]
 //!STORAGE
 
 //!HOOK OUTPUT
-//!BIND FRAME_DATA
+//!BIND MINMAX
 //!BIND TEMPORAL_MAX
 //!SAVE EMPTY
 //!WIDTH 1
@@ -42,98 +48,141 @@ void hook() {
 //!HOOK OUTPUT
 //!BIND HOOKED
 //!SAVE BLURRED
-//!DESC metering (spatial stabilization, horizonal)
-// Fast pixel shader gaussian blur by butterw pass1
+//!DESC metering (spatial stabilization, vertical)
 
-#define Offsets vec3(0.0, 1.3846153846, 3.2307692308)
-#define K       vec3(0.2270270270, 0.3162162162, 0.0702702703)
+#define offset vec3(0.0000000000, 1.3846153846, 3.2307692308)
+#define weight vec3(0.2270270270, 0.3162162162, 0.0702702703)
 
 vec4 hook(){
-    vec4 c0 = HOOKED_tex(HOOKED_pos) * K[0];
-    uint i = 1;
-    c0 += HOOKED_tex(HOOKED_pos + HOOKED_pt * vec2(Offsets[i], 0)) * K[i];
-    c0 += HOOKED_tex(HOOKED_pos - HOOKED_pt * vec2(Offsets[i], 0)) * K[i];
+    uint i;
+    vec4 c;
+
+    i = 0;
+    c = HOOKED_texOff(offset[i]) * weight[i];
+
+    i = 1;
+    c += HOOKED_texOff(vec2(offset[i], 0)) * weight[i];
+    c += HOOKED_texOff(-vec2(offset[i], 0)) * weight[i];
+
     i = 2;
-    c0 += HOOKED_tex(HOOKED_pos + HOOKED_pt * vec2(Offsets[i], 0)) * K[i];
-    c0 += HOOKED_tex(HOOKED_pos - HOOKED_pt * vec2(Offsets[i], 0)) * K[i];
-    return c0;
+    c += HOOKED_texOff(vec2(offset[i], 0)) * weight[i];
+    c += HOOKED_texOff(-vec2(offset[i], 0)) * weight[i];
+
+    return c;
 }
 
 //!HOOK OUTPUT
 //!BIND BLURRED
 //!SAVE BLURRED
-//!DESC metering (spatial stabilization, vertical)
-// Fast pixel shader gaussian blur by butterw pass2
+//!DESC metering (spatial stabilization, horizonal)
 
-#define Offsets vec3(0.0, 1.3846153846, 3.2307692308)
-#define K       vec3(0.2270270270, 0.3162162162, 0.0702702703)
+#define offset vec3(0.0000000000, 1.3846153846, 3.2307692308)
+#define weight vec3(0.2270270270, 0.3162162162, 0.0702702703)
 
 vec4 hook(){
-    vec4 c0 = BLURRED_tex(BLURRED_pos) * K[0];
-    uint i = 1;
-    c0 += BLURRED_tex(BLURRED_pos + BLURRED_pt * vec2(0, Offsets[i])) * K[i];
-    c0 += BLURRED_tex(BLURRED_pos - BLURRED_pt * vec2(0, Offsets[i])) * K[i];
+    uint i;
+    vec4 c;
+
+    i = 0;
+    c = BLURRED_texOff(offset[i]) * weight[i];
+
+    i = 1;
+    c += BLURRED_texOff(vec2(0, offset[i])) * weight[i];
+    c += BLURRED_texOff(-vec2(0, offset[i])) * weight[i];
+
     i = 2;
-    c0 += BLURRED_tex(BLURRED_pos + BLURRED_pt * vec2(Offsets[i], 0)) * K[i];
-    c0 += BLURRED_tex(BLURRED_pos - BLURRED_pt * vec2(Offsets[i], 0)) * K[i];
-    return c0;
+    c += BLURRED_texOff(vec2(0, offset[i])) * weight[i];
+    c += BLURRED_texOff(-vec2(0, offset[i])) * weight[i];
+
+    return c;
 }
 
 //!HOOK OUTPUT
 //!BIND BLURRED
-//!BIND FRAME_DATA
+//!BIND MINMAX
 //!SAVE EMPTY
 //!COMPUTE 32 32
-//!DESC metering (peak, bottom)
+//!DESC metering (min, max)
 
 void hook() {
     vec4 texelValue = texelFetch(BLURRED_raw, ivec2(gl_GlobalInvocationID.xy), 0);
-    float L = L_sdr * dot(texelValue.rgb, vec3(0.2627, 0.6780, 0.0593));
+    float L = L_sdr * max(max(texelValue.r, texelValue.g), texelValue.b);
 
     atomicMin(L_min, uint(L));
     atomicMax(L_max, uint(L));
 }
 
 //!HOOK OUTPUT
-//!BIND FRAME_DATA
+//!BIND MINMAX
 //!BIND TEMPORAL_MAX
 //!SAVE EMPTY
 //!WIDTH 1
 //!HEIGHT 1
 //!COMPUTE 1 1
-//!DESC metering (temporal stabilization, 8 frames)
+//!WHEN temporal_stable_frames
+//!DESC metering (temporal stabilization)
 
-#define length 8
+bool sence_changed() {
+    // hard transition, black frame insert
+    if (L_max_t[0] < 1) {
+        return true;
+    }
+
+    // hard transition, 1 stop tolerance
+    float prev_ev = log2(L_max_t[0] / L_sdr);
+    float curr_ev = log2(L_max / L_sdr);
+    if (abs(prev_ev - curr_ev) >= 1.0) {
+        return true;
+    }
+
+    // soft transition, black frame fade in
+    // uint sum = 0;
+    // for (uint i = 0; i < temporal_stable_frames; i++) {
+    //     sum += L_max_t[i];
+    // }
+    // if (L_sdr * (temporal_stable_frames - 1) > sum) {
+    //     return true;
+    // }
+
+    return false;
+}
+
+uint peak_harmonic_mean() {
+    float den = 1.0 / max(L_max, 1e-6);
+    for (uint i = 0; i < temporal_stable_frames - 1; i++) {
+        den += 1.0 / max(L_max_t[i], 1e-6);
+    }
+    float peak = temporal_stable_frames / den;
+    return uint(peak);
+}
+
+void peak_add() {
+    for (uint i = temporal_stable_frames - 1; i > 0; i--) {
+        L_max_t[i] = L_max_t[i - 1];
+    }
+    L_max_t[0] = L_max;
+}
+
+void peak_set_all() {
+    for (uint i = 0; i < temporal_stable_frames; i++) {
+        L_max_t[i] = L_max;
+    }
+}
 
 void hook() {
-    uint sum = 0;
-    for (uint i = 0; i < length; i++) {
-        sum += L_max_t[i];
+    if (sence_changed()) {
+        peak_set_all();
+        return;
     }
 
-    if (sum > 100 * (length - 1)) {
-        float den = 1.0 / L_max;
-        for (uint i = 0; i < length; i++) {
-            den += 1.0 / L_max_t[i];
-        }
-        const float peak = 8.0 / den;
-
-        for (uint i = length - 1; i > 0; i--) {
-            L_max_t[i] = L_max_t[i - 1];
-        }
-        L_max_t[0] = L_max;
-
-        L_max = uint(peak);
-    } else {
-        for (uint i = 0; i < length; i--) {
-            L_max_t[i] = L_max;
-        }
-    }
+    uint peak = peak_harmonic_mean();
+    peak_add();
+    L_max = peak;
 }
 
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!BIND FRAME_DATA
+//!BIND MINMAX
 //!DESC tone mapping (hable2, dynamic, hybrid)
 
 float toeLength = 0.0;
@@ -235,14 +284,12 @@ float eval_derivative_linear_gamma(float m, float b, float g, float x) {
 
 // CreateCurve
 float curve(float x) {
-    calc_direct_params_from_user();
-
     // normalize params to 1.0 range
     float invW = 1.0 / W;
-    x0 /= W;
-    x1 /= W;
-    overshootX /= W;
-    W = 1.0;
+    float x0 = x0 / W;
+    float x1 = x1 / W;
+    float overshootX = overshootX / W;
+    float W = 1.0;
 
     // Precompute information for all three segments (mid, toe, shoulder)
     const vec2  tmp = as_slope_intercept(x0, x1, y0, y1);
@@ -273,9 +320,9 @@ float curve(float x) {
     const float toeM = eval_derivative_linear_gamma(m, b, g, x0);
     const float shoulderM = eval_derivative_linear_gamma(m, b, g, x1);
 
-    y0 = max(pow(y0, g), 1e-6);
-    y1 = max(pow(y1, g), 1e-6);
-    overshootY = pow(1.0 + overshootY, g) - 1.0;
+    float y0 = max(pow(y0, g), 1e-6);
+    float y1 = max(pow(y1, g), 1e-6);
+    float overshootY = pow(1.0 + overshootY, g) - 1.0;
 
     const vec2  toeAB   = solve_AB(x0, y0, m);
     float   toeOffsetX  = 0.0,
@@ -508,8 +555,9 @@ vec3 tone_mapping_hybrid(vec3 color) {
 void calc_user_params_from_metered() {
     float L_min_ev = log2(L_min / L_sdr);
     float L_max_ev = log2(L_max / L_sdr);
+    float L_hdr_ev = log2(L_hdr / L_sdr);
 
-    shoulderLength = 1.0 - 1.0 / L_max_ev;
+    shoulderLength = L_max_ev / L_hdr_ev;
     shoulderStrength = L_max_ev;
     toeLength = L_max_ev / CONTRAST_sdr;
     toeStrength = 0.5 + 0.5 * (L_min / toeLength);
@@ -518,6 +566,7 @@ void calc_user_params_from_metered() {
 vec4 color = HOOKED_tex(HOOKED_pos);
 vec4 hook() {
     calc_user_params_from_metered();
+    calc_direct_params_from_user();
     color.rgb = tone_mapping_hybrid(color.rgb);
     return color;
 }
