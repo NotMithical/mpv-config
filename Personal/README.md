@@ -27,8 +27,6 @@ My personal configuration files, scripts and shaders for MPV
 
 **[track-list](https://github.com/dyphire/mpv-scripts#track-list.lua)**
 
-**[ytdl-preload](https://gist.github.com/bitingsock/17d90e3deeb35b5f75e55adb19098f58)**
-
 **[auto_profiles_mod](https://github.com/NotMithical/mpv-config/blob/main/portable_config/scripts/auto_profiles_mod.lua)**
 > Almost identical to MPV's internal [auto_profiles.lua](https://github.com/mpv-player/mpv/blob/master/player/lua/auto_profiles.lua) with one line added to enable reloading profiles with a hotkey. Requires --load-auto-profiles=no.
 
