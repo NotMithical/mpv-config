@@ -21,8 +21,6 @@ My personal configuration files, scripts and shaders for MPV
 
 **[sponsorblock_minimal](https://codeberg.org/jouni/mpv_sponsorblock_minimal)**
 
-**[stream_replay](https://github.com/divout/mpv_reduce_stream_cache)**
-
 **[thumbfast](https://github.com/po5/thumbfast)**
 
 **[track-list](https://github.com/dyphire/mpv-scripts#track-list.lua)**
