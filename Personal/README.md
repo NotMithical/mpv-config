@@ -1,6 +1,16 @@
 # mpv-config
 My personal configuration files, scripts and shaders for MPV
 
+Tested on and optimized for the following specs:
+
+OS: Windows 10
+
+CPU: Ryzen 5 5600X
+
+GPU: Vega 56 (Undervolted and power limited)
+
+Monitor: CoolerMaster GP27Q
+
 ## Scripts used
 
 **[SmartCopyPaste](https://github.com/Eisa01/mpv-scripts#smartcopypaste)**
