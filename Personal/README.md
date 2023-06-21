@@ -40,7 +40,7 @@ Monitor: CoolerMaster GP27Q
 
 ## Shaders used
 
-**[NLS#](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS#.glsl)**
+**[NLS#](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl)**
 > Nonlinear stretch shader adapted by yours truly to expand or compress both vertically and horizontally, minimizing overall distortion. Use `--with no-keepaspect`
 
 **AMD-CAS**
