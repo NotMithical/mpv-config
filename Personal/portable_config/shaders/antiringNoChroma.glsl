@@ -5,7 +5,7 @@
 
 //-- Configurable parameters --
 const float radius = 0.5;
-const float strength = 0.7;
+const float strength = 1.0;
 //-- Configurable parameters end --
 
 const float sq2i = 0.7071067811865475;
