@@ -10,6 +10,12 @@
 //!MAXIMUM 1.0
 0.5
 
+//!PARAM CropAmount
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 1.0
+0.0
+
 //!HOOK MAINPRESUB
 //!BIND HOOKED
 //!DESC Bidirectional Nonlinear Stretch
@@ -22,7 +28,15 @@ vec2 stretch(vec2 pos, float h_par, float v_par)
 		  y = pos.y - 0.5;
 	
 	//Map x & y coordinates to themselves with a curve
-	return vec2(mix(x * abs(x) * 2.0, x, h_m_stretch) + 0.5, mix(y * abs(y) * 2.0, y, v_m_stretch) + 0.5);
+	if (h_par < 1)
+	{
+		return vec2(mix(x * abs(x) * (2 - (CropAmount * 2)), x, h_m_stretch) + 0.5, mix(y * abs(y) * 2, y, v_m_stretch) + 0.5);
+	}
+	
+	else
+	{
+		return vec2(mix(x * abs(x) * 2, x, h_m_stretch) + 0.5, mix(y * abs(y) * (2 - (CropAmount * 2)), y, v_m_stretch) + 0.5);
+	}
 }
 
 vec4 hook()
