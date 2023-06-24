@@ -1,3 +1,13 @@
+// --Parameters Summary --
+// HorizontalStretch and VerticalStretch:
+//		Adjust balance between Horizontal and Vertical Stretching. Combined values of each should add up to 1.
+// CropAmount:
+//		Crop image edges. Raising this value results in loss of content but results in less stretching.
+// BarsAmount:
+//		Scale the image down and add padding in the form of black bars. Raising this value results in less stretching.
+//
+// The defaults will distribute stretching across all edges and will not crop or pad the image.
+
 //!PARAM HorizontalStretch
 //!TYPE float
 //!MINIMUM 0.0
