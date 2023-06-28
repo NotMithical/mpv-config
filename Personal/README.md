@@ -38,6 +38,8 @@ Monitor: CoolerMaster GP27Q
 **[auto_profiles_mod](https://github.com/NotMithical/mpv-config/blob/main/portable_config/scripts/auto_profiles_mod.lua)**
 > Almost identical to MPV's internal [auto_profiles.lua](https://github.com/mpv-player/mpv/blob/master/player/lua/auto_profiles.lua) with one line added to enable reloading profiles with a hotkey. Requires --load-auto-profiles=no.
 
+**[autocrop.lua](https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autocrop.lua)**
+
 ## Shaders used
 
 **[NLS#](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl)**
@@ -87,3 +89,5 @@ Monitor: CoolerMaster GP27Q
 **[Film Grain](https://github.com/haasn/gentoo-conf/tree/xor/home/nand/.mpv/shaders)**
 
 **[Super XBR](https://github.com/dyphire/mpv-config/tree/master/shaders/superxbr)**
+
+**[hdeband](https://github.com/AN3223/dotfiles/blob/master/.config/mpv/shaders/hdeband.glsl)**
