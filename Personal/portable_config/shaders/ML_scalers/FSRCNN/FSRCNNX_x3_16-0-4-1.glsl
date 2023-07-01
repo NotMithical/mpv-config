@@ -1251,7 +1251,7 @@ return vec4(res, 0);
 //!WHEN OUTPUT.w LUMA.w / 2.300 > OUTPUT.h LUMA.h / 2.300 > *
 //!WIDTH LUMA.w 3 *
 //!HEIGHT LUMA.h 3 *
-//!DESC aggregation
+//!DESC aggregation FSRCNN3
 //!BIND SUBCONV1
 //!BIND SUBCONV2
 //!BIND SUBCONV3

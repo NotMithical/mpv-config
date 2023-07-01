@@ -1302,7 +1302,7 @@ return res;
 //!WHEN OUTPUT.w LUMA.w / 3.300 > OUTPUT.h LUMA.h / 3.300 > *
 //!WIDTH LUMA.w 4 *
 //!HEIGHT LUMA.h 4 *
-//!DESC aggregation
+//!DESC aggregation FSRCNN4
 //!BIND SUBCONV1
 //!BIND SUBCONV2
 //!BIND SUBCONV3

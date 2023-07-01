@@ -718,7 +718,7 @@ return vec4(res);
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
 //!WIDTH LUMA.w 2 *
 //!HEIGHT LUMA.h 2 *
-//!DESC aggregation
+//!DESC aggregation Tsuba
 //!BIND SUBCONV1
 vec4 hook()
 {
