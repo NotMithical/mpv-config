@@ -70,7 +70,7 @@ local options = {
     detect_limit = "24/255",
     detect_round = 2,
     detect_min_ratio = 0.5,
-    detect_seconds = 1,
+    detect_seconds = 2,
     suppress_osd = false,
 }
 read_options(options)
