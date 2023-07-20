@@ -1,5 +1,4 @@
-// ITU-R BT.2390 EETF
-// https://www.itu.int/pub/R-REP-BT.2390
+// Linear tone mapping of I in ICtCp.
 
 //!PARAM L_hdr
 //!TYPE float
@@ -13,43 +12,9 @@
 //!MAXIMUM 1000
 203.0
 
-//!PARAM CONTRAST_sdr
-//!TYPE float
-//!MINIMUM 0
-//!MAXIMUM 1000000
-1000.0
-
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!DESC tone mapping (bt.2390)
-
-const float DISPGAMMA = 2.4;
-const float L_W = 1.0;
-const float L_B = 0.0;
-
-float bt1886_r(float L, float gamma, float Lw, float Lb) {
-    float a = pow(pow(Lw, 1.0 / gamma) - pow(Lb, 1.0 / gamma), gamma);
-    float b = pow(Lb, 1.0 / gamma) / (pow(Lw, 1.0 / gamma) - pow(Lb, 1.0 / gamma));
-    float V = pow(max(L / a, 0.0), 1.0 / gamma) - b;
-    return V;
-}
-
-float bt1886_f(float V, float gamma, float Lw, float Lb) {
-    float a = pow(pow(Lw, 1.0 / gamma) - pow(Lb, 1.0 / gamma), gamma);
-    float b = pow(Lb, 1.0 / gamma) / (pow(Lw, 1.0 / gamma) - pow(Lb, 1.0 / gamma));
-    float L = a * pow(max(V + b, 0.0), gamma);
-    return L;
-}
-
-float curve_clip(float x) {
-    x = bt1886_r(x, DISPGAMMA, L_W, L_W / CONTRAST_sdr);
-    x = bt1886_f(x, DISPGAMMA, L_W, L_B);
-    return x;
-}
-
-vec3 tone_mapping_rgb(vec3 RGB) {
-    return vec3(curve_clip(RGB.r), curve_clip(RGB.g), curve_clip(RGB.b));
-}
+//!DESC tone mapping (linear, ICtCp)
 
 const float pq_m1 = 0.1593017578125;
 const float pq_m2 = 78.84375;
@@ -149,41 +114,9 @@ vec3 ICtCp_to_RGB(vec3 color) {
 
 float curve(float x) {
     const float iw = Y_to_ST2084(L_hdr);
-    const float ib = Y_to_ST2084(0.0);
     const float ow = Y_to_ST2084(L_sdr);
-    const float ob = Y_to_ST2084(L_sdr / CONTRAST_sdr);
-
-    const float maxLum = (ow - ib) / (iw - ib);
-    const float minLum = (ob - ib) / (iw - ib);
-
-    const float KS = 1.5 * maxLum - 0.5;
-    const float b = minLum;
-
-    // E1
-    x = (x - ib) / (iw - ib);
-
-    // E2
-    if (KS <= x) {
-        const float TB  = (x - KS) / (1.0 - KS);
-        const float TB2 = TB * TB;
-        const float TB3 = TB * TB2;
-
-        const float PB  = (2.0 * TB3 - 3.0 * TB2 + 1.0) * KS  +
-                          (TB3 - 2.0 * TB2 + TB) * (1.0 - KS) +
-                          (-2.0 * TB3 + 3.0 * TB2) * maxLum;
-
-        x = PB;
-    }
-
-    // E3
-    if (0.0 <= x) {
-        x = x + b * pow((1 - x), 4.0);
-    }
-
-    // E4
-    x = x * (iw - ib) + ib;
-
-    return x;
+    const float w = iw / ow;
+    return x / w;
 }
 
 vec3 tone_mapping_ictcp(vec3 ICtCp) {
@@ -199,6 +132,5 @@ vec4 hook() {
     color.rgb = RGB_to_ICtCp(color.rgb);
     color.rgb = tone_mapping_ictcp(color.rgb);
     color.rgb = ICtCp_to_RGB(color.rgb);
-    color.rgb = tone_mapping_rgb(color.rgb);
     return color;
 }

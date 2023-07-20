@@ -48,53 +48,41 @@ void hook() {
 //!HOOK OUTPUT
 //!BIND HOOKED
 //!SAVE BLURRED
-//!DESC metering (spatial stabilization, vertical)
-
-#define offset vec3(0.0000000000, 1.3846153846, 3.2307692308)
-#define weight vec3(0.2270270270, 0.3162162162, 0.0702702703)
-
-vec4 hook(){
-    uint i;
-    vec4 c;
-
-    i = 0;
-    c = HOOKED_texOff(offset[i]) * weight[i];
-
-    i = 1;
-    c += HOOKED_texOff(vec2(offset[i], 0)) * weight[i];
-    c += HOOKED_texOff(-vec2(offset[i], 0)) * weight[i];
-
-    i = 2;
-    c += HOOKED_texOff(vec2(offset[i], 0)) * weight[i];
-    c += HOOKED_texOff(-vec2(offset[i], 0)) * weight[i];
-
-    return c;
-}
-
-//!HOOK OUTPUT
-//!BIND BLURRED
-//!SAVE BLURRED
 //!DESC metering (spatial stabilization, horizonal)
 
 #define offset vec3(0.0000000000, 1.3846153846, 3.2307692308)
 #define weight vec3(0.2270270270, 0.3162162162, 0.0702702703)
 
 vec4 hook(){
-    uint i;
-    vec4 c;
+    uint i = 0;
+    vec4 c = HOOKED_texOff(offset[i]) * weight[i];
 
-    i = 0;
-    c = BLURRED_texOff(offset[i]) * weight[i];
+    for (i = 1; i < 3; i++) {
+        c += HOOKED_texOff( vec2(offset[i], 0.0)) * weight[i];
+        c += HOOKED_texOff(-vec2(offset[i], 0.0)) * weight[i];
+    }
 
-    i = 1;
-    c += BLURRED_texOff(vec2(0, offset[i])) * weight[i];
-    c += BLURRED_texOff(-vec2(0, offset[i])) * weight[i];
+    return vec4(c.rgb, 1.0);
+}
 
-    i = 2;
-    c += BLURRED_texOff(vec2(0, offset[i])) * weight[i];
-    c += BLURRED_texOff(-vec2(0, offset[i])) * weight[i];
+//!HOOK OUTPUT
+//!BIND BLURRED
+//!SAVE BLURRED
+//!DESC metering (spatial stabilization, vertical)
 
-    return c;
+#define offset vec3(0.0000000000, 1.3846153846, 3.2307692308)
+#define weight vec3(0.2270270270, 0.3162162162, 0.0702702703)
+
+vec4 hook(){
+    uint i = 0;
+    vec4 c = BLURRED_texOff(offset[i]) * weight[i];
+
+    for (i = 1; i < 3; i++) {
+        c += BLURRED_texOff( vec2(0.0, offset[i])) * weight[i];
+        c += BLURRED_texOff(-vec2(0.0, offset[i])) * weight[i];
+    }
+
+    return vec4(c.rgb, 1.0);
 }
 
 //!HOOK OUTPUT
@@ -108,8 +96,8 @@ void hook() {
     vec4 texelValue = texelFetch(BLURRED_raw, ivec2(gl_GlobalInvocationID.xy), 0);
     float L = L_sdr * max(max(texelValue.r, texelValue.g), texelValue.b);
 
-    atomicMin(L_min, uint(L));
-    atomicMax(L_max, uint(L));
+    atomicMin(L_min, uint(L + 0.5));
+    atomicMax(L_max, uint(L + 0.5));
 }
 
 //!HOOK OUTPUT
@@ -148,11 +136,11 @@ bool sence_changed() {
 }
 
 uint peak_harmonic_mean() {
-    float den = 1.0 / max(L_max, 1e-6);
+    float den = 1.0 / max(log2(L_max), 1e-6);
     for (uint i = 0; i < temporal_stable_frames - 1; i++) {
-        den += 1.0 / max(L_max_t[i], 1e-6);
+        den += 1.0 / max(log2(L_max_t[i]), 1e-6);
     }
-    float peak = temporal_stable_frames / den;
+    float peak = exp2(temporal_stable_frames / den);
     return uint(peak);
 }
 
@@ -404,52 +392,52 @@ float ST2084_to_Y(float N) {
     return L * pq_C;
 }
 
-vec3 RGB_to_XYZ(float R, float G, float B) {
+vec3 RGB_to_XYZ(vec3 RGB) {
     mat3 M = mat3(
-        0.6370, 0.1446, 0.1689,
-        0.2627, 0.6780, 0.0593,
-        0.0000, 0.0281, 1.0610);
-    return vec3(R, G, B) * M;
+        0.6369580483012914, 0.14461690358620832,  0.1688809751641721,
+        0.2627002120112671, 0.6779980715188708,   0.05930171646986196,
+        0.000000000000000,  0.028072693049087428, 1.060985057710791);
+    return RGB * M;
 }
 
-vec3 XYZ_to_RGB(float X, float Y, float Z) {
+vec3 XYZ_to_RGB(vec3 XYZ) {
     mat3 M = mat3(
-         1.7167, -0.3557, -0.2534,
-        -0.6667,  1.6165,  0.0158,
-         0.0176, -0.0428,  0.9421);
-    return vec3(X, Y, Z) * M;
+         1.716651187971268,  -0.355670783776392, -0.253366281373660,
+        -0.666684351832489,   1.616481236634939,  0.0157685458139111,
+         0.017639857445311,  -0.042770613257809,  0.942103121235474);
+    return XYZ * M;
 }
 
-vec3 XYZ_to_Cone(float X, float Y, float Z) {
+vec3 XYZ_to_Cone(vec3 XYZ) {
     mat3 M = mat3(
          0.41478972, 0.579999,  0.0146480,
         -0.2015100,  1.120649,  0.0531008,
         -0.0166008,  0.264800,  0.6684799);
-    return vec3(X, Y, Z) * M;
+    return XYZ * M;
 }
 
-vec3 Cone_to_XYZ(float X, float Y, float Z) {
+vec3 Cone_to_XYZ(vec3 LMS) {
     mat3 M = mat3(
          1.9242264357876067,  -1.0047923125953657,  0.037651404030618,
          0.35031676209499907,  0.7264811939316552, -0.06538442294808501,
         -0.09098281098284752, -0.3127282905230739,  1.5227665613052603);
-    return vec3(X, Y, Z) * M;
+    return LMS * M;
 }
 
-vec3 Cone_to_Iab(float L, float M, float S) {
-    mat3 MM = mat3(
+vec3 Cone_to_Iab(vec3 LMS) {
+    mat3 M = mat3(
         0.5,       0.5,       0.0,
         3.524000, -4.066708,  0.542708,
         0.199076,  1.096799, -1.295875);
-    return vec3(L, M, S) * MM;
+    return LMS * M;
 }
 
-vec3 Iab_to_Cone(float I, float a, float b) {
+vec3 Iab_to_Cone(vec3 Iab) {
     mat3 M = mat3(
         1.0,                 0.1386050432715393,   0.05804731615611886,
         0.9999999999999999, -0.1386050432715393,  -0.05804731615611886,
         0.9999999999999998, -0.09601924202631895, -0.8118918960560388);
-    return vec3(I, a, b) * M;
+    return Iab * M;
 }
 
 const float b = 1.15;
@@ -458,66 +446,71 @@ const float g = 0.66;
 const float d = -0.56;
 const float d0 = 1.6295499532821566e-11;
 
-vec3 RGB_to_Jzazbz(vec3 color, float L_sdr) {
+vec3 RGB_to_Jzazbz(vec3 color) {
     color *= L_sdr;
 
-    color = RGB_to_XYZ(color.r, color.g, color.b);
+    color = RGB_to_XYZ(color);
 
     float Xm = (b * color.x) - ((b - 1.0) * color.z);
     float Ym = (g * color.y) - ((g - 1.0) * color.x);
 
-    color = XYZ_to_Cone(Xm, Ym, color.z);
+    color = XYZ_to_Cone(vec3(Xm, Ym, color.z));
 
     color.r = Y_to_ST2084(color.r);
     color.g = Y_to_ST2084(color.g);
     color.b = Y_to_ST2084(color.b);
 
-    color = Cone_to_Iab(color.r, color.g, color.b);
+    color = Cone_to_Iab(color);
 
     color.r = ((1.0 + d) * color.r) / (1.0 + (d * color.r)) - d0;
 
     return color;
 }
 
-vec3 Jzazbz_to_RGB(vec3 color, float L_sdr) {
+vec3 Jzazbz_to_RGB(vec3 color) {
     color.r = (color.r + d0) / (1.0 + d - d * (color.r + d0));
 
-    color = Iab_to_Cone(color.r, color.g, color.b);
+    color = Iab_to_Cone(color);
 
     color.r = ST2084_to_Y(color.r);
     color.g = ST2084_to_Y(color.g);
     color.b = ST2084_to_Y(color.b);
 
-    color = Cone_to_XYZ(color.r, color.g, color.b);
+    color = Cone_to_XYZ(color);
 
     float Xa = (color.x + ((b - 1.0) * color.z)) / b;
     float Ya = (color.y + ((g - 1.0) * Xa)) / g;
 
-    color = XYZ_to_RGB(Xa, Ya, color.z);
+    color = XYZ_to_RGB(vec3(Xa, Ya, color.z));
 
     color /= L_sdr;
 
     return color;
 }
 
-vec3 Jzazbz_to_JzCzhz(vec3 color) {
-    float az = color.g;
-    float bz = color.b;
+float pi = 3.141592653589793;
+float epsilon = 0.0002;
 
-    color.g = sqrt(az * az + bz * bz);
-    color.b = atan(bz, az);
+vec3 Lab_to_LCH(vec3 Lab) {
+    float a = Lab.y;
+    float b = Lab.z;
 
-    return color;
+    float C = length(vec2(a, b));
+    float H = (abs(a) < epsilon && abs(b) < epsilon) ?
+        0.0 :
+        atan(b, a) * 180.0 / pi;
+
+    return vec3(Lab.x, C, H);
 }
 
-vec3 JzCzhz_to_Jzazbz(vec3 color) {
-    float Cz = color.g;
-    float hz = color.b;
+vec3 LCH_to_Lab(vec3 LCH) {
+    float C = max(LCH.y, 0.0);
+    float H = LCH.z * pi / 180.0;
 
-    color.g = Cz * cos(hz);
-    color.b = Cz * sin(hz);
+    float a = C * cos(H);
+    float b = C * sin(H);
 
-    return color;
+    return vec3(LCH.x, a, b);
 }
 
 vec3 tone_mapping_hybrid(vec3 color) {
@@ -528,26 +521,26 @@ vec3 tone_mapping_hybrid(vec3 color) {
     vec3 sat;
 
     src = color;
-    src = RGB_to_Jzazbz(src, L_sdr);
-    src = Jzazbz_to_JzCzhz(src);
+    src = RGB_to_Jzazbz(src);
+    src = Lab_to_LCH(src);
 
     rgb = vec3(curve(color.r), curve(color.g), curve(color.b));
-    rgb = RGB_to_Jzazbz(rgb, L_sdr);
-    rgb = Jzazbz_to_JzCzhz(rgb);
+    rgb = RGB_to_Jzazbz(rgb);
+    rgb = Lab_to_LCH(rgb);
 
     float L = dot(color, vec3(0.2627, 0.6780, 0.0593));
     lum = color * curve(L) / L;
-    lum = RGB_to_Jzazbz(lum, L_sdr);
-    lum = Jzazbz_to_JzCzhz(lum);
+    lum = RGB_to_Jzazbz(lum);
+    lum = Lab_to_LCH(lum);
 
     float norm = max(max(color.r, color.g), color.b);
     sat = color * curve(norm) / norm;
-    sat = RGB_to_Jzazbz(sat, L_sdr);
-    sat = Jzazbz_to_JzCzhz(sat);
+    sat = RGB_to_Jzazbz(sat);
+    sat = Lab_to_LCH(sat);
 
     dst = vec3(mix(lum.r, sat.r, src.r), mix(lum.g, rgb.g, src.r), src.b);
-    dst = JzCzhz_to_Jzazbz(dst);
-    dst = Jzazbz_to_RGB(dst, L_sdr);
+    dst = LCH_to_Lab(dst);
+    dst = Jzazbz_to_RGB(dst);
 
     return dst;
 }
@@ -556,11 +549,12 @@ void calc_user_params_from_metered() {
     float L_min_ev = log2(L_min / L_sdr);
     float L_max_ev = log2(L_max / L_sdr);
     float L_hdr_ev = log2(L_hdr / L_sdr);
+    float black = 1.0 / CONTRAST_sdr;
 
     shoulderLength = L_max_ev / L_hdr_ev;
     shoulderStrength = L_max_ev;
-    toeLength = L_max_ev / CONTRAST_sdr;
-    toeStrength = 0.5 + 0.5 * (L_min / toeLength);
+    toeLength = L_max_ev / CONTRAST_sdr + black;
+    toeStrength = 0.5 + 0.5 * (L_min / (toeLength - black));
 }
 
 vec4 color = HOOKED_tex(HOOKED_pos);

@@ -1,10 +1,4 @@
-// ITU-R BT.2446 Conversion Method C - 6.1.8
-// Optional processing of chroma correction above HDR Reference White
-
-// In SDR production, highlight parts are sometimes intentionally expressed as white. The processing
-// described in this section is optionally used to shift chroma above HDR Reference White to achromatic
-// when the converted SDR content requires a degree of consistency for SDR production content. This
-// processing is applied as needed before the tone-mapping processing.
+// Linear tone mapping of I in ICtCp.
 
 //!PARAM L_hdr
 //!TYPE float
@@ -18,16 +12,9 @@
 //!MAXIMUM 1000
 203.0
 
-//!PARAM sigma
-//!TYPE float
-//!MINIMUM 0
-//!MAXIMUM 1
-0.2
-
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!WHEN sigma
-//!DESC chroma correction
+//!DESC tone mapping (linear, Lab)
 
 #define cbrt(x) (sign(x) * pow(abs(x), 1.0 / 3.0))
 
@@ -129,46 +116,25 @@ vec3 Lab_to_RGB(vec3 color) {
     return color;
 }
 
-float pi = 3.141592653589793;
-float epsilon = 0.02;
-
-vec3 Lab_to_LCH(vec3 Lab) {
-    float a = Lab.y;
-    float b = Lab.z;
-
-    float C = length(vec2(a, b));
-    float H = (abs(a) < epsilon && abs(b) < epsilon) ?
-        0.0 :
-        atan(b, a) * 180.0 / pi;
-
-    return vec3(Lab.x, C, H);
+float curve(float x) {
+    const float iw = RGB_to_Lab(vec3(L_hdr / L_sdr)).x;
+    const float ow = RGB_to_Lab(vec3(1.0)).x;
+    const float w = iw / ow;
+    return x / w;
 }
 
-vec3 LCH_to_Lab(vec3 LCH) {
-    float C = max(LCH.y, 0.0);
-    float H = LCH.z * pi / 180.0;
+vec3 tone_mapping_ictcp(vec3 ICtCp) {
+    float I2  = curve(ICtCp.x);
+    ICtCp.yz *= min(ICtCp.x / I2, I2 / ICtCp.x);
+    ICtCp.x   = I2;
 
-    float a = C * cos(H);
-    float b = C * sin(H);
-
-    return vec3(LCH.x, a, b);
-}
-
-float chroma_correction(float L, float Lref, float Lmax, float sigma) {
-    return L > Lref ?
-        max(1.0 - sigma * (L - Lref) / (Lmax - Lref), 0.0) :
-        1.0;
+    return ICtCp;
 }
 
 vec4 color = HOOKED_tex(HOOKED_pos);
 vec4 hook() {
-    float L_ref = RGB_to_Lab(vec3(1.0)).x;
-    float L_max = RGB_to_Lab(vec3(L_hdr / L_sdr)).x;
-
     color.rgb = RGB_to_Lab(color.rgb);
-    color.rgb = Lab_to_LCH(color.rgb);
-    color.y  *= chroma_correction(color.x, L_ref, L_max, sigma);
-    color.rgb = LCH_to_Lab(color.rgb);
+    color.rgb = tone_mapping_ictcp(color.rgb);
     color.rgb = Lab_to_RGB(color.rgb);
     return color;
 }
