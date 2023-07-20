@@ -91,3 +91,5 @@ Monitor: CoolerMaster GP27Q
 **[Super XBR](https://github.com/dyphire/mpv-config/tree/master/shaders/superxbr)**
 
 **[hdeband](https://github.com/AN3223/dotfiles/blob/master/.config/mpv/shaders/hdeband.glsl)**
+
+**[pixel-clipper](https://github.com/Artoriuz/glsl-pixel-clipper)**
