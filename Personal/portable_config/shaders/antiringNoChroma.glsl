@@ -2,7 +2,7 @@
 //!HOOK POSTKERNEL
 //!BIND PREKERNEL
 //!BIND HOOKED
-
+//!WHEN POSTKERNEL.w PREKERNEL.w / 1.000 > POSTKERNEL.h PREKERNEL.h / 1.000 > *
 //-- Configurable parameters --
 const float radius = 0.5;
 const float strength = 1.0;
