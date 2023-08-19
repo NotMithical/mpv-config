@@ -1,6 +1,3 @@
-// Revised 05/30/22
-// https://gist.github.com/igv/a015fc885d5c22e6891820ad89555637
-//
 // KrigBilateral by Shiandow
 //
 // This library is free software; you can redistribute it and/or
