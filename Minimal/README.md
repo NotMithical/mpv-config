@@ -9,4 +9,4 @@ A much more minimal configuration designed for getting started quickly
 
 **[input-event](https://github.com/natural-harmonia-gropius/input-event)**
 
-**[modernf OSC](https://github.com/FinnRaze/mpv-osc-modern-f)**
+**[UOSC](https://github.com/tomasklaen/uosc)**
