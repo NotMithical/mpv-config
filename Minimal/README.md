@@ -10,3 +10,5 @@ A much more minimal configuration designed for getting started quickly
 **[input-event](https://github.com/natural-harmonia-gropius/input-event)**
 
 **[UOSC](https://github.com/tomasklaen/uosc)**
+
+**[persist-properties](https://github.com/d87/mpv-persist-properties)**
