@@ -93,3 +93,7 @@ Monitor: CoolerMaster GP27Q
 **[hdeband](https://github.com/AN3223/dotfiles/blob/master/.config/mpv/shaders/hdeband.glsl)**
 
 **[pixel-clipper](https://github.com/Artoriuz/glsl-pixel-clipper)**
+
+**[CfL Prediction Chroma Scaling](https://github.com/Artoriuz/glsl-chroma-from-luma-prediction)**
+
+**[Joint/Fast Bilateral Chroma Scaling](https://github.com/Artoriuz/glsl-joint-bilateral)**
