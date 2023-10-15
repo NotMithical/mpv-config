@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-//desc: Guided filter guided by the downscaled image
+// Description: guided.glsl: Guided by the downscaled image
 
 /* The radius can be adjusted with the MEANI stage's downscaling factor. 
  * Higher numbers give a bigger radius.
@@ -33,10 +33,10 @@
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (PREI)
 //!BIND HOOKED
 //!WIDTH HOOKED.w 1.25 /
 //!HEIGHT HOOKED.h 1.25 /
+//!DESC Guided filter (PREI)
 //!SAVE PREI
 
 vec4 hook()
@@ -47,16 +47,17 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (I)
 //!BIND PREI
-//!WIDTH HOOKED.w 1.0 /
-//!HEIGHT HOOKED.h 1.0 /
+//!WIDTH HOOKED.w
+//!HEIGHT HOOKED.h
+//!DESC Guided filter (I)
 //!SAVE I
 
 vec4 hook()
 {
 	return PREI_texOff(0);
 }
+
 
 //!HOOK LUMA
 //!HOOK CHROMA

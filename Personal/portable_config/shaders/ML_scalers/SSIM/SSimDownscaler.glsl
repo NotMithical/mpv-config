@@ -1,8 +1,3 @@
-// Revised 05/15/22
-// https://gist.github.com/igv/36508af3ffc84410fe39761d6969be10
-//
-// SSimDownscaler by Shiandow
-//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
@@ -17,8 +12,8 @@
 // License along with this library.
 
 //!HOOK POSTKERNEL
-//!BIND HOOKED
 //!BIND PREKERNEL
+//!BIND HOOKED
 //!SAVE L2
 //!WIDTH NATIVE_CROPPED.w
 //!WHEN NATIVE_CROPPED.h POSTKERNEL.h >
@@ -58,8 +53,8 @@ vec4 hook() {
 }
 
 //!HOOK POSTKERNEL
-//!BIND HOOKED
 //!BIND L2
+//!BIND HOOKED
 //!SAVE L2
 //!WHEN NATIVE_CROPPED.w POSTKERNEL.w >
 //!COMPONENTS 3

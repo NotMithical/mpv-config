@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-//desc: Self-guided. Fast.
+// Description: guided_fast.glsl: Fast.
 
 /* The radius can be adjusted with the MEANI stage's downscaling factor. 
  * Higher numbers give a bigger radius.
@@ -33,30 +33,17 @@
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (PREI)
 //!BIND HOOKED
-//!WIDTH HOOKED.w 1.125 /
-//!HEIGHT HOOKED.h 1.125 /
-//!SAVE PREI
+//!WIDTH HOOKED.w 2 /
+//!HEIGHT HOOKED.h 2 /
+//!DESC Guided filter (I)
+//!SAVE I
 
 vec4 hook()
 {
 	return HOOKED_texOff(0);
 }
 
-//!HOOK LUMA
-//!HOOK CHROMA
-//!HOOK RGB
-//!DESC Guided filter (I)
-//!BIND PREI
-//!WIDTH HOOKED.w 2 /
-//!HEIGHT HOOKED.h 2 /
-//!SAVE I
-
-vec4 hook()
-{
-	return PREI_texOff(0);
-}
 
 //!HOOK LUMA
 //!HOOK CHROMA
@@ -77,9 +64,9 @@ vec4 hook()
 //!HOOK RGB
 //!DESC Guided filter (MEANI)
 //!BIND I
+//!SAVE MEANI
 //!WIDTH I.w 1.5 /
 //!HEIGHT I.h 1.5 /
-//!SAVE MEANI
 
 vec4 hook()
 {

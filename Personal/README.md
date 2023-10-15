@@ -27,15 +27,13 @@ Monitor: CoolerMaster GP27Q
 
 **[reduce_stream_cache](https://github.com/divout/mpv_reduce_stream_cache)**
 
-**[reload](https://github.com/sibwaf/mpv-scripts#reload.lua)**
-
 **[sponsorblock_minimal](https://codeberg.org/jouni/mpv_sponsorblock_minimal)**
 
 **[thumbfast](https://github.com/po5/thumbfast)**
 
 **[track-list](https://github.com/dyphire/mpv-scripts#track-list.lua)**
 
-**[auto_profiles_mod](https://github.com/NotMithical/mpv-config/blob/main/portable_config/scripts/auto_profiles_mod.lua)**
+**[auto_profiles_mod](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/scripts/auto_profiles_mod.lua)**
 > Almost identical to MPV's internal [auto_profiles.lua](https://github.com/mpv-player/mpv/blob/master/player/lua/auto_profiles.lua) with one line added to enable reloading profiles with a hotkey. Requires --load-auto-profiles=no.
 
 **[autocrop.lua](https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autocrop.lua)**
@@ -96,4 +94,4 @@ Monitor: CoolerMaster GP27Q
 
 **[CfL Prediction Chroma Scaling](https://github.com/Artoriuz/glsl-chroma-from-luma-prediction)**
 
-**[Joint/Fast Bilateral Chroma Scaling](https://github.com/Artoriuz/glsl-joint-bilateral)**
+**[Joint/Fast/Meme Bilateral Chroma Scaling](https://github.com/Artoriuz/glsl-joint-bilateral)**
