@@ -12,3 +12,5 @@ A much more minimal configuration designed for getting started quickly
 **[UOSC](https://github.com/tomasklaen/uosc)**
 
 **[persist-properties](https://github.com/d87/mpv-persist-properties)**
+
+**[mpvcontextmenu](https://gitlab.com/carmanaught/mpvcontextmenu/)**
