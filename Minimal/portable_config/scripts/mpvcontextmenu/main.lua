@@ -486,8 +486,7 @@ menuList = {
 
     open_menu = {
         {COMMAND, "File", "Ctrl+F", "script-message open-file-dialog", "", false},
-        {COMMAND, "Folder", "Ctrl+G", "script-binding add_folder_dialog", "", false},
-        {COMMAND, "URL", "", "script-binding open_url_dialog", "", false},
+        {COMMAND, "Clipboard Contents", "", "script-message clipboard-command loadfile %clip% append-play", "", false},
     },
 
     window_menu = {
@@ -504,8 +503,8 @@ menuList = {
     staysontop_menu = {
         {COMMAND, "Select Next", "", "cycle ontop", "", false, true},
         {SEP},
-        {RADIO, "Off", "", "set ontop \"yes\"", function() return stateOnTop(false) end, false, true},
-        {RADIO, "On", "", "set ontop \"no\"", function() return stateOnTop(true) end, false, true},
+        {RADIO, "Off", "", "set ontop \"no\"", function() return stateOnTop(false) end, false, true},
+        {RADIO, "On",  "", "set ontop \"yes\"", function() return stateOnTop(true) end, false, true},
     },
 }
 
@@ -542,8 +541,7 @@ mp.register_event("file-loaded", function()
 
         open_menu = {
             {COMMAND, "File", "Ctrl+F", "script-message open-file-dialog", "", false},
-            {COMMAND, "Folder", "Ctrl+G", "script-binding add_folder_dialog", "", false},
-            {COMMAND, "URL", "", "script-binding open_url_dialog", "", false},
+            {COMMAND, "Clipboard Contents", "", "script-message clipboard-command loadfile %clip% append-play", "", false},
         },
 
         play_menu = {

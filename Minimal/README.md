@@ -16,3 +16,5 @@ A much more minimal (in the sense of performance cost and setup) configuration d
 **[mpvcontextmenu](https://gitlab.com/carmanaught/mpvcontextmenu/)**
 
 **[mpv-open-file-dialog](https://github.com/rossy/mpv-open-file-dialog)**
+
+**[clipboard](https://github.com/CogentRedTester/mpv-clipboard)**
