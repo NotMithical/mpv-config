@@ -485,7 +485,7 @@ menuList = {
     },
 
     open_menu = {
-        {COMMAND, "File", "Ctrl+F", "script-binding add_files_dialog", "", false},
+        {COMMAND, "File", "Ctrl+F", "script-message open-file-dialog", "", false},
         {COMMAND, "Folder", "Ctrl+G", "script-binding add_folder_dialog", "", false},
         {COMMAND, "URL", "", "script-binding open_url_dialog", "", false},
     },
@@ -541,7 +541,7 @@ mp.register_event("file-loaded", function()
         },
 
         open_menu = {
-            {COMMAND, "File", "Ctrl+F", "script-binding add_files_dialog", "", false},
+            {COMMAND, "File", "Ctrl+F", "script-message open-file-dialog", "", false},
             {COMMAND, "Folder", "Ctrl+G", "script-binding add_folder_dialog", "", false},
             {COMMAND, "URL", "", "script-binding open_url_dialog", "", false},
         },

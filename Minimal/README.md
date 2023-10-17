@@ -1,5 +1,5 @@
 # mpv-config
-A much more minimal configuration designed for getting started quickly
+A much more minimal (in the sense of performance cost and setup) configuration designed for getting started quickly on windows
 
 **[Download Minimal Only](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/NotMithical/mpv-config/tree/main/Minimal)**
 
@@ -14,3 +14,5 @@ A much more minimal configuration designed for getting started quickly
 **[persist-properties](https://github.com/d87/mpv-persist-properties)**
 
 **[mpvcontextmenu](https://gitlab.com/carmanaught/mpvcontextmenu/)**
+
+**[mpv-open-file-dialog](https://github.com/rossy/mpv-open-file-dialog)**
