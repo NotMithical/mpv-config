@@ -15,6 +15,6 @@ A much more minimal (in the sense of performance cost and setup) configuration d
 
 **[mpvcontextmenu](https://gitlab.com/carmanaught/mpvcontextmenu/)**
 
-**[mpv-open-file-dialog](https://github.com/rossy/mpv-open-file-dialog)**
+**[load_plus](https://github.com/hooke007/MPV_lazy/blob/main/portable_config/scripts/load_plus.lua)**
 
 **[clipboard](https://github.com/CogentRedTester/mpv-clipboard)**

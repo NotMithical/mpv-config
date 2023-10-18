@@ -221,7 +221,7 @@ local function audTrackMenu()
     local audTrackMenuVal, audTrackCount = {}, trackCount("audio")
 
     audTrackMenuVal = {
-         {COMMAND, "Open File", "", "script-binding add_audio_dialog", "", false},
+         {COMMAND, "Open File", "", "script-binding load_plus/append_aid", "", false},
          {COMMAND, "Reload File", "", "audio-reload", "", false},
          {COMMAND, "Remove", "", "audio-remove", "", false},
          {SEP},
@@ -262,7 +262,7 @@ local function subTrackMenu()
     local subTrackMenuVal, subTrackCount = {}, trackCount("sub")
 
     subTrackMenuVal = {
-        {COMMAND, "Open File", "(Shift+F)", "script-binding add_subtitle_dialog", "", false},
+        {COMMAND, "Open File", "(Shift+F)", "script-binding load_plus/append_sid", "", false},
         {COMMAND, "Reload File", "", "sub-reload", "", false},
         {COMMAND, "Clear File", "", "sub-remove", "", false},
         {SEP},
@@ -485,8 +485,8 @@ menuList = {
     },
 
     open_menu = {
-        {COMMAND, "File", "Ctrl+F", "script-message open-file-dialog", "", false},
-        {COMMAND, "Clipboard Contents", "", "script-message clipboard-command loadfile %clip% append-play", "", false},
+        {COMMAND, "File", "Ctrl+F", "script-binding load_plus/import_files", "", false},
+        {COMMAND, "URL", "", "script-binding load_plus/import_url", "", false},
     },
 
     window_menu = {
@@ -540,8 +540,8 @@ mp.register_event("file-loaded", function()
         },
 
         open_menu = {
-            {COMMAND, "File", "Ctrl+F", "script-message open-file-dialog", "", false},
-            {COMMAND, "Clipboard Contents", "", "script-message clipboard-command loadfile %clip% append-play", "", false},
+            {COMMAND, "File", "Ctrl+F", "script-binding load_plus/import_files", "", false},
+			{COMMAND, "URL", "", "script-binding load_plus/import_url", "", false},
         },
 
         play_menu = {
@@ -583,7 +583,7 @@ mp.register_event("file-loaded", function()
             {SEP},
             {COMMAND, "Previous Frame", "Alt+Left", "frame-back-step", "", false, true},
             {COMMAND, "Next Frame", "Alt+Right", "frame-step", "", false, true},
-            {COMMAND, "Next Black Frame", "Alt+b", "script-binding skip_scene", "", false, true},
+            -- {COMMAND, "Next Black Frame", "Alt+b", "script-binding skip_scene", "", false, true},
             {SEP},
             {COMMAND, "Previous Subtitle", "", "no-osd sub-seek -1", "", false, true},
             {COMMAND, "Current Subtitle", "", "no-osd sub-seek 0", "", false, true},
@@ -771,29 +771,29 @@ mp.register_event("file-loaded", function()
         },
 
         tools_menu = {
-            {CASCADE, "Playlist", "playlist_menu", "", "", false},
-            {COMMAND, "Find Subtitle (Subit)", "", "script-binding subit", "", false},
+--          {CASCADE, "Playlist", "playlist_menu", "", "", false},
+--          {COMMAND, "Find Subtitle (Subit)", "", "script-binding subit", "", false},
             {COMMAND, "Playback Information", "Tab", "script-binding display-stats-toggle", "", false, true},
         },
 
-        playlist_menu = {
-            {COMMAND, "Show", "L", "script-binding showplaylist", "", false},
-            {SEP},
-            {COMMAND, "Open", "", "script-binding open_playlist_dialog", "", false},
-            {COMMAND, "Save", "", "script-binding saveplaylist", "", false},
-            {COMMAND, "Regenerate", "", "script-binding loadfiles", "", false},
-            {COMMAND, "Clear", "Shift+L", "playlist-clear", "", false},
-            {SEP},
-            {COMMAND, "Append File", "", "script-binding append_files_dialog", "", false},
-            {COMMAND, "Append URL", "", "script_binding append_url_dialog", "", false},
-            {COMMAND, "Remove", "", "playlist-remove current", "", false, true},
-            {SEP},
-            {COMMAND, "Move Up", "", function() movePlaylist("up") end, "", function() return (propNative("playlist-count") < 2) and true or false end, true},
-            {COMMAND, "Move Down", "", function() movePlaylist("down") end, "", function() return (propNative("playlist-count") < 2) and true or false end, true},
-            {SEP},
-            {CHECK, "Shuffle", "", "cycle shuffle", function() return propNative("shuffle") end, false, true},
-            {CHECK, "Repeat", "", "cycle-values loop-playlist \"inf\" \"no\"", function() return statePlayLoop() end, false, true},
-        },
+--      playlist_menu = {
+--          {COMMAND, "Show", "L", "script-binding showplaylist", "", false},
+--          {SEP},
+--          {COMMAND, "Open", "", "script-binding open_playlist_dialog", "", false},
+--          {COMMAND, "Save", "", "script-binding saveplaylist", "", false},
+--          {COMMAND, "Regenerate", "", "script-binding loadfiles", "", false},
+--          {COMMAND, "Clear", "Shift+L", "playlist-clear", "", false},
+--          {SEP},
+--          {COMMAND, "Append File", "", "script-binding append_files_dialog", "", false},
+--          {COMMAND, "Append URL", "", "script_binding append_url_dialog", "", false},
+--          {COMMAND, "Remove", "", "playlist-remove current", "", false, true},
+--          {SEP},
+--          {COMMAND, "Move Up", "", function() movePlaylist("up") end, "", function() return (propNative("playlist-count") < 2) and true or false end, true},
+--          {COMMAND, "Move Down", "", function() movePlaylist("down") end, "", function() return (propNative("playlist-count") < 2) and true or false end, true},
+--          {SEP},
+--          {CHECK, "Shuffle", "", "cycle shuffle", function() return propNative("shuffle") end, false, true},
+--          {CHECK, "Repeat", "", "cycle-values loop-playlist \"inf\" \"no\"", function() return statePlayLoop() end, false, true},
+--      },
 
         window_menu = {
             {CASCADE, "Stays on Top", "staysontop_menu", "", "", false},
