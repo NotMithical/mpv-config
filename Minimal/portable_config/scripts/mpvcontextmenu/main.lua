@@ -487,8 +487,15 @@ menuList = {
     open_menu = {
         {COMMAND, "File", "Ctrl+F", "script-binding load_plus/import_files", "", false},
         {COMMAND, "URL", "", "script-binding load_plus/import_url", "", false},
+		{CASCADE, "Disc", "disc_menu", "", "", false},
     },
-
+	
+	disc_menu = {
+		{COMMAND, "CD", "", "loadfile cdda://", "", false},
+		{COMMAND, "DVD", "", "loadfile dvd://longest", "", false},
+		{COMMAND, "BluRay", "", "loadfile bd://longest", "", false},
+	},
+	
     window_menu = {
         {CASCADE, "Stays on Top", "staysontop_menu", "", "", false},
         {CHECK, "Remove Frame", "", "cycle border", function() return not propNative("border") end, false, true},
@@ -542,7 +549,14 @@ mp.register_event("file-loaded", function()
         open_menu = {
             {COMMAND, "File", "Ctrl+F", "script-binding load_plus/import_files", "", false},
 			{COMMAND, "URL", "", "script-binding load_plus/import_url", "", false},
+			{CASCADE, "Disc", "disc_menu", "", "", false},
         },
+		
+		disc_menu = {
+		{COMMAND, "CD", "", "loadfile cdda://", "", false},
+		{COMMAND, "DVD", "", "loadfile dvd://longest", "", false},
+		{COMMAND, "BluRay", "", "loadfile bd://longest", "", false},
+		},
 
         play_menu = {
             {COMMAND, "Play/Pause", "Space", "cycle pause", "", false, true},
