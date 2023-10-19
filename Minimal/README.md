@@ -3,6 +3,14 @@ A much more minimal (in the sense of performance cost and setup) configuration d
 
 **[Download Minimal Only](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/NotMithical/mpv-config/tree/main/Minimal)**
 
+### Optional Dependencies
+
+**[yt-dlp](https://github.com/yt-dlp/yt-dlp/releases/latest)**
+> Required for watching youtube videos. Place executable in the same directory as the MPV executable.
+
+**[Tclkit](https://tclkits.rkeene.org/fossil/wiki/Downloads)**
+> Latest with extensions enabled. Required for using the context menu. Rename executable to `wish.exe` and place in the same directory as the MPV executable.
+
 ## Scripts used
 
 **[SmartCopyPaste](https://github.com/Eisa01/mpv-scripts#smartcopypaste)**
