@@ -1,3 +1,6 @@
+//	NLS# by NotMithical
+//	https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl
+//
 // --Parameters Summary --
 // HorizontalStretch and VerticalStretch:
 //		Adjust balance between Horizontal and Vertical Stretching. Combined values of each should add up to 1.
