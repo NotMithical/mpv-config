@@ -9,7 +9,7 @@ A much more minimal (in the sense of performance cost and setup) configuration d
 > Required for watching youtube videos. Place executable in the same directory as the MPV executable.
 
 **[Tclkit](https://tclkits.rkeene.org/fossil/wiki/Downloads)**
-> Latest with extensions enabled. Required for using the context menu. Rename executable to `wish.exe` and place in the same directory as the MPV executable.
+> Required for using the context menu. Place the latest executable with extensions enabled, renamed to `wish.exe`, in the same directory as the MPV executable.
 
 ## Scripts used
 
