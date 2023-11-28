@@ -60,7 +60,7 @@
 
 // Denoising factor (sigma, higher means more blur)
 #ifdef LUMA_raw
-#define S 2.2727641053003422
+#define S 0.85
 #else
 #define S 0 //0 to disable chroma denoising
 #endif
