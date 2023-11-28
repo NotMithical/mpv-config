@@ -7,7 +7,7 @@ OS: Windows 10
 
 CPU: Ryzen 5 5600X
 
-GPU: Vega 56 (Undervolted and power limited)
+GPU: RTX 4060
 
 Monitor: CoolerMaster GP27Q
 
