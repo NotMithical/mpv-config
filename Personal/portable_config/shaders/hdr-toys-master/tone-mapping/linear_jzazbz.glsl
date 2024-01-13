@@ -1,5 +1,3 @@
-// Linear tone mapping of I in ICtCp.
-
 //!PARAM L_hdr
 //!TYPE float
 //!MINIMUM 0
@@ -152,10 +150,12 @@ vec3 tone_mapping_ictcp(vec3 ICtCp) {
     return ICtCp;
 }
 
-vec4 color = HOOKED_tex(HOOKED_pos);
 vec4 hook() {
+    vec4 color = HOOKED_texOff(0);
+
     color.rgb = RGB_to_Jzazbz(color.rgb);
     color.rgb = tone_mapping_ictcp(color.rgb);
     color.rgb = Jzazbz_to_RGB(color.rgb);
+
     return color;
 }

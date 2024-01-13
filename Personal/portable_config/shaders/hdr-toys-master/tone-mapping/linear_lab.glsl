@@ -1,5 +1,3 @@
-// Linear tone mapping of I in ICtCp.
-
 //!PARAM L_hdr
 //!TYPE float
 //!MINIMUM 0
@@ -14,7 +12,7 @@
 
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!DESC tone mapping (linear, Lab)
+//!DESC tone mapping (linear, CIE-Lab)
 
 #define cbrt(x) (sign(x) * pow(abs(x), 1.0 / 3.0))
 
@@ -131,10 +129,12 @@ vec3 tone_mapping_ictcp(vec3 ICtCp) {
     return ICtCp;
 }
 
-vec4 color = HOOKED_tex(HOOKED_pos);
 vec4 hook() {
+    vec4 color = HOOKED_texOff(0);
+
     color.rgb = RGB_to_Lab(color.rgb);
     color.rgb = tone_mapping_ictcp(color.rgb);
     color.rgb = Lab_to_RGB(color.rgb);
+
     return color;
 }
