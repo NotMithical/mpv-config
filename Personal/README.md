@@ -95,3 +95,5 @@ Monitor: CoolerMaster GP27Q
 **[CfL Prediction Chroma Scaling](https://github.com/Artoriuz/glsl-chroma-from-luma-prediction)**
 
 **[Joint/Fast/Meme Bilateral Chroma Scaling](https://github.com/Artoriuz/glsl-joint-bilateral)**
+
+**[ArtCNN](https://github.com/Artoriuz/ArtCNN)**
