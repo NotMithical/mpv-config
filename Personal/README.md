@@ -29,8 +29,6 @@ Monitor: CoolerMaster GP27Q
 
 **[sponsorblock_minimal](https://codeberg.org/jouni/mpv_sponsorblock_minimal)**
 
-**[thumbfast](https://github.com/po5/thumbfast)**
-
 **[track-list](https://github.com/dyphire/mpv-scripts#track-list.lua)**
 
 **[auto_profiles_mod](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/scripts/auto_profiles_mod.lua)**
