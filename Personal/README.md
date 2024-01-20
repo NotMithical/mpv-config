@@ -38,6 +38,8 @@ Monitor: CoolerMaster GP27Q
 
 **[autocrop.lua](https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autocrop.lua)**
 
+**[Debug](https://github.com/tsl0922/mpv-debug-plugin)**
+
 ## Shaders used
 
 **[NLS#](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl)**
