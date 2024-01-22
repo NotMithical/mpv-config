@@ -43,6 +43,9 @@ Monitor: CoolerMaster GP27Q
 **[NLS#](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl)**
 > Handles mismatched aspect ratios by nonlinearly stretching (vertically and horizontally), cropping, and padding the source image/video to match the window or screen. Includes four tuneable parameters: VerticalStretch, HorizontalStretch, CropAmount and BarsAmount, all of which have a range of 0.0 to 1.0. The first 2 parameters control the balance between vertical and horizontal stretching, allowing you to stretch in only one direction or distribute stretching evenly across all edges (default). CropAmount behaves similarly to PanScan, allowing you to crop edges of the image in favor of reducing distortion. BarsAmount allows you to preserve/add padding at the edges of the image in favor of reducing distortion. Use with `--no-keepaspect`
 
+**[PQ_Blackpoint](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/PQ_Blackpoint.glsl)**
+> My attempt at accounting for blackpoint in PQ-PQ
+
 **AMD-CAS**
 > Some ported by [deus0ww](https://github.com/deus0ww), some ported by [agyild](https://gist.github.com/agyild) and some I can't find the source of.
 
