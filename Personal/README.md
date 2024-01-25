@@ -38,6 +38,8 @@ Monitor: CoolerMaster GP27Q
 
 **[Debug](https://github.com/tsl0922/mpv-debug-plugin)**
 
+**[mpv-menu-plugin](https://github.com/tsl0922/mpv-menu-plugin)**
+
 ## Shaders used
 
 **[NLS#](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl)**
