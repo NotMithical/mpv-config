@@ -21,7 +21,7 @@ A much more minimal (in the sense of performance cost and setup) configuration d
 
 **[persist-properties](https://github.com/d87/mpv-persist-properties)**
 
-**[mpvcontextmenu](https://gitlab.com/carmanaught/mpvcontextmenu/)**
+**[mpv-menu-plugin](https://github.com/tsl0922/mpv-menu-plugin)**
 
 **[load_plus](https://github.com/hooke007/MPV_lazy/blob/main/portable_config/scripts/load_plus.lua)**
 
