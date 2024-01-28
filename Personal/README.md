@@ -22,9 +22,6 @@ Monitor: CoolerMaster GP27Q
 
 **[input-event](https://github.com/natural-harmonia-gropius/input-event)**
 
-**[osc](https://github.com/po5/thumbfast/blob/vanilla-osc/player/lua/osc.lua)**
-> Vanilla OSC with thumbfast support
-
 **[reduce_stream_cache](https://github.com/divout/mpv_reduce_stream_cache)**
 
 **[sponsorblock_minimal](https://codeberg.org/jouni/mpv_sponsorblock_minimal)**
