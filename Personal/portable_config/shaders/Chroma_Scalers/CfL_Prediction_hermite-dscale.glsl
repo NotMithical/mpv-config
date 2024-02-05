@@ -20,52 +20,68 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//!HOOK CHROMA
+///!HOOK CHROMA
+//!BIND CHROMA
 //!BIND LUMA
-//!BIND HOOKED
 //!SAVE LUMA_LOWRES
 //!WIDTH CHROMA.w
 //!HEIGHT LUMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC Chroma From Luma Prediction (Downscaling Luma 1st Step)
+//!DESC CfL Downscaling Yx Hermite
+#define axis 0
+#define weight hermite
+
+float box(const float d)      { return float(abs(d) <= 0.5); }
+float hermite(const float d)  { return smoothstep(0.0, 1.0, 1 - abs(d)); }
+
+vec2  scale = LUMA_size / CHROMA_size;
+const ivec2 axle = ivec2(axis == 0, axis == 1);
 
 vec4 hook() {
-    float factor = ceil(LUMA_size.x / HOOKED_size.x);
-    int start = int(ceil(-factor / 2.0 - 0.5));
-    int end = int(floor(factor / 2.0 - 0.5));
-
-    float output_luma = 0.0;
-    int wt = 0;
-    for (int dx = start; dx <= end; dx++) {
-        output_luma += LUMA_texOff(vec2(dx + 0.5, 0.0)).x;
-        wt++;
+    float d, w;
+    float wsum = weight(0);
+    float ysum = LUMA_tex(LUMA_pos).x;
+    for(int i = 0; i < scale[axis]; i++) {
+        d = i + 0.5;
+        w = weight(d / scale[axis]);
+        if (w == 0.0) { continue; }
+        wsum += w * 2.0;
+        ysum += w * (LUMA_texOff(axle * vec2( d)).x +
+                     LUMA_texOff(axle * vec2(-d)).x);
     }
-    vec4 output_pix = vec4(output_luma / float(wt), 0.0, 0.0, 1.0);
-    return output_pix;
+    return vec4(ysum / wsum, 0.0, 0.0, 1.0);
 }
 
 //!HOOK CHROMA
+//!BIND CHROMA
 //!BIND LUMA_LOWRES
-//!BIND HOOKED
 //!SAVE LUMA_LOWRES
 //!WIDTH CHROMA.w
 //!HEIGHT CHROMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC Chroma From Luma Prediction (Downscaling Luma 2nd Step)
+//!DESC CfL Downscaling Yy Hermite
+#define axis 1
+#define weight hermite
+
+float box(const float d)      { return float(abs(d) <= 0.5); }
+float hermite(const float d)  { return smoothstep(0.0, 1.0, 1 - abs(d)); }
+
+vec2  scale = LUMA_LOWRES_size / CHROMA_size;
+const ivec2 axle = ivec2(axis == 0, axis == 1);
 
 vec4 hook() {
-    float factor = ceil(LUMA_LOWRES_size.y / HOOKED_size.y);
-    int start = int(ceil(-factor / 2.0 - 0.5));
-    int end = int(floor(factor / 2.0 - 0.5));
-
-    float output_luma = 0.0;
-    int wt = 0;
-    for (int dy = start; dy <= end; dy++) {
-        output_luma += LUMA_LOWRES_texOff(vec2(0.0, dy + 0.5)).x;
-        wt++;
+    float d, w;
+    float wsum = weight(0);
+    float ysum = LUMA_LOWRES_tex(LUMA_LOWRES_pos).x;
+    for(int i = 0; i < scale[axis]; i++) {
+        d = i + 0.5;
+        w = weight(d / scale[axis]);
+        if (w == 0.0) { continue; }
+        wsum += w * 2.0;
+        ysum += w * (LUMA_LOWRES_texOff(axle * vec2( d)).x +
+                     LUMA_LOWRES_texOff(axle * vec2(-d)).x);
     }
-    vec4 output_pix = vec4(output_luma / float(wt), 0.0, 0.0, 1.0);
-    return output_pix;
+    return vec4(ysum / wsum, 0.0, 0.0, 1.0);
 }
 
 //!HOOK CHROMA
