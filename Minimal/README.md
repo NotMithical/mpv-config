@@ -12,8 +12,6 @@ A much more minimal (in the sense of performance cost and setup) configuration d
 
 **[SmartCopyPaste](https://github.com/Eisa01/mpv-scripts#smartcopypaste)**
 
-**[input-event](https://github.com/natural-harmonia-gropius/input-event)**
-
 **[UOSC](https://github.com/tomasklaen/uosc)**
 
 **[persist-properties](https://github.com/d87/mpv-persist-properties)**
