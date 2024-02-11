@@ -30,22 +30,29 @@ const vec2 F11  = vec2(0.38052, 0.37713);
 const vec2 DCI  = vec2(0.31400, 0.35100);
 const vec2 ACES = vec2(0.32168, 0.33767);
 
-vec2 K(float CCT) {
-    CCT = clamp(CCT, 4000, 25000) * 1.4387768775039337 / 1.438;
+// https://en.wikipedia.org/wiki/Standard_illuminant#Illuminant_series_D
+vec2 CIE_D(float CCT) {
+    // https://en.wikipedia.org/wiki/Planckian_locus
+    // c2 = 1.4387768775039337
+    CCT = (CCT * 1.4388) / 1.438;
 
-    const float t1 = 1000.0 / CCT;
-    const float t2 = t1 * t1;
-    const float t3 = t1 * t2;
+    CCT = clamp(CCT, 4000.0, 25000.0);
 
-    const float x = CCT <= 7000
+    float t1 = 1000.0 / CCT;
+    float t2 = t1 * t1;
+    float t3 = t1 * t2;
+
+    float x = CCT <= 7000.0
         ? 0.244063 + 0.09911 * t1 + 2.9678 * t2 - 4.6070 * t3
         : 0.237040 + 0.24748 * t1 + 1.9018 * t2 - 2.0064 * t3;
-    const float y = -0.275 + 2.87 * x - 3.0 * x * x;
+    float y = -0.275 + 2.87 * x - 3.0 * x * x;
 
     return vec2(x, y);
 }
 
 // Chromaticities
+// https://www.itu.int/rec/T-REC-H.273
+// https://github.com/colour-science/colour/tree/develop/colour/models/rgb/datasets
 
 struct Chromaticity {
     vec2 r, g, b, w;
@@ -171,6 +178,14 @@ const Chromaticity AdobeRGB = Chromaticity(
     D65
 );
 
+// Adobe Wide Gamut RGB
+const Chromaticity AdobeWideGamutRGB = Chromaticity(
+    vec2(0.7347, 0.2653),
+    vec2(0.1152, 0.8264),
+    vec2(0.1566, 0.0177),
+    D50
+);
+
 // ROMM (ProPhoto RGB)
 const Chromaticity ROMM = Chromaticity(
     vec2(0.734699, 0.265301),
@@ -195,7 +210,14 @@ const Chromaticity AP1 = Chromaticity(
     ACES
 );
 
-// Chromatic adaptation methods
+// Chromatic adaptation transform
+// https://en.wikipedia.org/wiki/LMS_color_space
+
+const mat3 HPE = mat3(
+     0.4002400,  0.7076000, -0.0808100,
+    -0.2263000,  1.1653200,  0.0457000,
+     0.0000000,  0.0000000,  0.9182200
+);
 
 const mat3 Bradford = mat3(
      0.8951000,  0.2664000, -0.1614000,
@@ -203,10 +225,10 @@ const mat3 Bradford = mat3(
      0.0389000, -0.0685000,  1.0296000
 );
 
-const mat3 von_Kries = mat3(
-     0.4002400,  0.7076000, -0.0808100,
-    -0.2263000,  1.1653200,  0.0457000,
-     0.0000000,  0.0000000,  0.9182200
+const mat3 CAT97 = mat3(
+     0.8562000,  0.3372000, -0.1934000,
+    -0.8360000,  1.8327000,  0.0033000,
+     0.0357000, -0.0469000,  1.0112000
 );
 
 const mat3 CAT02 = mat3(
@@ -216,9 +238,9 @@ const mat3 CAT02 = mat3(
 );
 
 const mat3 CAT16 = mat3(
-     0.401288,  0.650173, -0.051461,
-    -0.250268,  1.204414,  0.045854,
-    -0.002079,  0.048952,  0.953127
+     0.4012880,  0.6501730, -0.0514610,
+    -0.2502680,  1.2044140,  0.0458540,
+    -0.0020790,  0.0489520,  0.9531270
 );
 
 // Other constants
@@ -237,31 +259,6 @@ const mat3 SingularY3 = mat3(
 
 // Constants End
 
-mat3 invert_mat3(mat3 m) {
-    float determinant =
-          m[0][0] * m[1][1] * m[2][2]
-        + m[0][1] * m[1][2] * m[2][0]
-        + m[0][2] * m[1][0] * m[2][1]
-        - m[2][0] * m[1][1] * m[0][2]
-        - m[2][1] * m[1][2] * m[0][0]
-        - m[2][2] * m[1][0] * m[0][1];
-
-    if (determinant == 0.0)
-        return Identity3;
-
-    return mat3(
-        m[1][1] * m[2][2] - m[1][2] * m[2][1],
-        m[2][1] * m[0][2] - m[2][2] * m[0][1],
-        m[0][1] * m[1][2] - m[0][2] * m[1][1],
-        m[2][0] * m[1][2] - m[1][0] * m[2][2],
-        m[0][0] * m[2][2] - m[2][0] * m[0][2],
-        m[1][0] * m[0][2] - m[0][0] * m[1][2],
-        m[1][0] * m[2][1] - m[2][0] * m[1][1],
-        m[2][0] * m[0][1] - m[0][0] * m[2][1],
-        m[0][0] * m[1][1] - m[1][0] * m[0][1]
-    ) / determinant;
-}
-
 vec3 xyY_to_XYZ(vec3 xyY) {
     float x = xyY.x;
     float y = xyY.y;
@@ -276,6 +273,7 @@ vec3 xyY_to_XYZ(vec3 xyY) {
     return vec3(X, Y, Z);
 }
 
+// http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
 mat3 RGB_to_XYZ(Chromaticity C) {
     if (C == GRAY)
         return Identity3;
@@ -286,8 +284,12 @@ mat3 RGB_to_XYZ(Chromaticity C) {
     vec3 w = xyY_to_XYZ(vec3(C.w, 1.0));
 
     mat3 n = transpose(mat3(r, g, b));
-    vec3 s = w * invert_mat3(n);
-    mat3 m = mat3(n[0] * s, n[1] * s, n[2] * s);
+    vec3 s = w * inverse(n);
+    mat3 m = mat3(
+        s.x, 0.0, 0.0,
+        0.0, s.y, 0.0,
+        0.0, 0.0, s.z
+    ) * n;
 
     return m;
 }
@@ -296,13 +298,11 @@ mat3 XYZ_to_RGB(Chromaticity C) {
     if (C == GRAY)
         return SingularY3;
 
-    return invert_mat3(RGB_to_XYZ(C));
+    return inverse(RGB_to_XYZ(C));
 }
 
+// http://www.brucelindbloom.com/index.html?Eqn_ChromAdapt.html
 mat3 adaptation(vec2 W1, vec2 W2, mat3 cone) {
-    if (W1 == W2)
-        return Identity3;
-
     vec3 src_XYZ = xyY_to_XYZ(vec3(W1, 1.0));
     vec3 dst_XYZ = xyY_to_XYZ(vec3(W2, 1.0));
 
@@ -315,15 +315,18 @@ mat3 adaptation(vec2 W1, vec2 W2, mat3 cone) {
         0.0, 0.0, dst_cone.z / src_cone.z
     );
 
-    return cone * scale * invert_mat3(cone);
+    return cone * scale * inverse(cone);
 }
 
 vec4 hook() {
     vec4 color = HOOKED_texOff(0);
 
-    color.rgb *= RGB_to_XYZ(from);
-    color.rgb *= adaptation(from.w, to.w, cone);
-    color.rgb *= XYZ_to_RGB(to);
+    if (from != to) {
+        color.rgb *= RGB_to_XYZ(from);
+        if (from.w != to.w)
+            color.rgb *= adaptation(from.w, to.w, cone);
+        color.rgb *= XYZ_to_RGB(to);
+    }
 
     return color;
 }

@@ -95,7 +95,7 @@ Monitor: CoolerMaster GP27Q
 **[pixel-clipper](https://github.com/Artoriuz/glsl-pixel-clipper)**
 
 **[CfL Prediction Chroma Scaling](https://github.com/Artoriuz/glsl-chroma-from-luma-prediction)**
-> Some of these are edits by **[deus0ww](https://github.com/deus0ww/mpv-conf/tree/master/shaders/bilateral)**
+> Variants by **[deus0ww](https://github.com/deus0ww/mpv-conf/tree/master/shaders/bilateral)** and **[Jules-A](https://github.com/Jules-A/glsl-chroma-from-luma-prediction)**
 
 **[Joint/Fast/Meme Bilateral Chroma Scaling](https://github.com/Artoriuz/glsl-joint-bilateral)**
 

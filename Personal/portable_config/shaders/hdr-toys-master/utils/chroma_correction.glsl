@@ -24,19 +24,14 @@
 //!MAXIMUM 1
 0.05
 
-//!PARAM alpha
-//!TYPE float
-//!MINIMUM 0.00
-//!MAXIMUM 0.33
-0.04
-
 //!HOOK OUTPUT
 //!BIND HOOKED
 //!WHEN sigma
 //!DESC chroma correction
 
-#define cbrt(x) (sign(x) * pow(abs(x), 1.0 / 3.0))
-
+float cbrt(float x) {
+    return sign(x) * pow(abs(x), 1.0 / 3.0);
+}
 
 vec3 RGB_to_XYZ(vec3 RGB) {
     mat3 M = mat3(
@@ -70,8 +65,8 @@ vec3 XYZD50_to_XYZD65(vec3 XYZ) {
     return XYZ * M;
 }
 
-float delta = 6.0 / 29.0;
-float deltac = delta * 2.0 / 3.0;
+const float delta = 6.0 / 29.0;
+const float deltac = delta * 2.0 / 3.0;
 
 float f1(float x, float delta) {
     return x > pow(delta, 3.0) ?
@@ -85,9 +80,9 @@ float f2(float x, float delta) {
         (x - deltac) * (3.0 * pow(delta, 2.0));
 }
 
-vec3 XYZ_ref = RGB_to_XYZ(vec3(L_sdr));
-
 vec3 XYZ_to_Lab(vec3 XYZ) {
+    vec3 XYZ_ref = RGB_to_XYZ(vec3(L_sdr));
+
     float X = XYZ.x;
     float Y = XYZ.y;
     float Z = XYZ.z;
@@ -104,6 +99,8 @@ vec3 XYZ_to_Lab(vec3 XYZ) {
 }
 
 vec3 Lab_to_XYZ(vec3 Lab) {
+    vec3 XYZ_ref = RGB_to_XYZ(vec3(L_sdr));
+
     float L = Lab.x;
     float a = Lab.y;
     float b = Lab.z;
@@ -172,38 +169,17 @@ float chroma_correction(float L, float Lref, float Lmax, float sigma) {
     return 1.0;
 }
 
-vec3 crosstalk(vec3 x, float a) {
-    float b = 1.0 - 2.0 * a;
-    mat3  M = mat3(
-        b, a, a,
-        a, b, a,
-        a, a, b);
-    return x * M;
-}
-
-vec3 crosstalk_inv(vec3 x, float a) {
-    float b = 1.0 - a;
-    float c = 1.0 - 3.0 * a;
-    mat3  M = mat3(
-         b, -a, -a,
-        -a,  b, -a,
-        -a, -a,  b) / c;
-    return x * M;
-}
-
 vec4 hook() {
     vec4 color = HOOKED_texOff(0);
 
     const float L_ref = RGB_to_Lab(vec3(1.0)).x;
     const float L_max = RGB_to_Lab(vec3(L_hdr / L_sdr)).x;
 
-    color.rgb = crosstalk(color.rgb, alpha);
     color.rgb = RGB_to_Lab(color.rgb);
     color.rgb = Lab_to_LCH(color.rgb);
     color.y  *= chroma_correction(color.x, L_ref, L_max, sigma);
     color.rgb = LCH_to_Lab(color.rgb);
     color.rgb = Lab_to_RGB(color.rgb);
-    color.rgb = crosstalk_inv(color.rgb, alpha);
 
     return color;
 }
