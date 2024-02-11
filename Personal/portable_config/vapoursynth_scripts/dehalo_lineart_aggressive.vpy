@@ -2,7 +2,7 @@ from vapoursynth import core
 import vapoursynth as vs
 
 import vsutil
-import havsfunc as hf
+import vsdehalo
 
 src = video_in
 
@@ -15,7 +15,7 @@ mask_inner = core.std.Minimum(luma)
 
 halos = core.std.Expr([mask_outer, mask_inner], 'x y -')
 
-dehalo = hf.DeHalo_alpha(src)
+dehalo = vsdehalo.dehalo_alpha(src)
 
 masked_dehalo = core.std.MaskedMerge(src, dehalo, halos)
 

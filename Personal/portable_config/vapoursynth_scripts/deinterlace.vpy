@@ -3,7 +3,10 @@ import vapoursynth as vs
 
 import havsfunc
 
-if video_in.width > 900 or container_fps > 30 :
+if container_fps > 47 :
+	raise Exception("Input framerate too high!")
+
+elif video_in.width > 900 :
     #video_in = core.znedi3.nnedi3(clip=video_in, field=3)
     #ref = core.znedi3.nnedi3(clip=video_in, field=3)
     

@@ -10,6 +10,8 @@ fmt_src = input.format
 source = fmt_src.id
 
 max_Leng = 720
+
+
 scene_th = 0.1
 GPU = 0
 GPU_t = 2
@@ -42,7 +44,7 @@ if short_edge > max_Leng :
 	cut1 = cut0.resize.Lanczos(width=w_ds, height=h_ds, format=vs.RGBS, matrix_in_s="709")
 else :
 	cut1 = cut0.resize.Bilinear(format=vs.RGBS, matrix_in_s="709")
-cut2 = core.rife.RIFE(clip=cut1, model=9, factor_num=2, factor_den=1, gpu_id=GPU, gpu_thread=GPU_t, sc=True, skip=True, skip_threshold=static_th)
+cut2 = core.rife.RIFE(clip=cut1, model=45, factor_num=2, factor_den=1, gpu_id=GPU, gpu_thread=GPU_t, sc=True, skip=True, skip_threshold=static_th)
 
 output = cut2.resize.Bilinear(format=fmt_out, matrix_s="709", range=1 if colorlv==0 else None)
 
