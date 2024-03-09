@@ -100,3 +100,5 @@ Monitor: CoolerMaster GP27Q
 **[Joint/Fast/Meme Bilateral Chroma Scaling](https://github.com/Artoriuz/glsl-joint-bilateral)**
 
 **[ArtCNN](https://github.com/Artoriuz/ArtCNN)**
+
+**[AiUpscale](https://github.com/hooke007/MPV_lazy/tree/main/portable_config/shaders)**
