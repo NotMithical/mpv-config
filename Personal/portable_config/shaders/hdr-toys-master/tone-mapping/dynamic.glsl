@@ -471,7 +471,7 @@ void hook() {
     vec4 color = texelFetch(METERING_raw, ivec2(gl_GlobalInvocationID.xy), 0);
     float intensity_min = Y_to_ST2084(L_sdr);
     float intensity = max(max(max(max(color.r, color.g), color.b), color.w), intensity_min);
-    uint intensity_int = uint(intensity * 4096.0 + 0.5);
+    uint intensity_int = uint(intensity * 4095.0 + 0.5);
 
     atomicMax(L_max, intensity_int);
 }
@@ -517,12 +517,12 @@ uint peak_harmonic_mean() {
     float x = 0.0;
     for (uint i = 0; i <= temporal_stable_frames; i++) {
         float current = float(i == 0 ? L_max : L_max_t[i - 1]);
-        current = current / 4096.0;
+        current = current / 4095.0;
         current = max(current, 1e-6);
         x += 1.0 / current;
     }
     x = float(temporal_stable_frames + 1) / x;
-    return uint(x * 4096.0 + 0.5);
+    return uint(x * 4095.0 + 0.5);
 }
 
 void peak_set(uint peak) {
@@ -898,7 +898,7 @@ void calc_direct_params_from_user() {
 }
 
 void calc_user_params_from_metered() {
-    float L_max_i = float(L_max) / 4096.0;
+    float L_max_i = float(L_max) / 4095.0;
     float L_max_y = ST2084_to_Y(L_max_i);
     float L_max_ev = log2(L_max_y / L_sdr);
     float L_hdr_ev = log2(L_hdr / L_sdr);
@@ -919,8 +919,7 @@ vec4 hook() {
     vec3 S_jab = RGB_to_Jzazbz(color.rgb);
     vec3 S_jch = Lab_to_LCH(S_jab);
 
-    const vec3 RGB_to_Y = vec3(0.2627002120112671, 0.6779980715188708, 0.05930171646986196);
-    float Y = dot(color.rgb, RGB_to_Y);
+    float Y = RGB_to_XYZ(color.rgb).y;
     vec3 Y_tm = color.rgb * curve(Y) / max(Y, 1e-6);
     vec3 Y_jab = RGB_to_Jzazbz(Y_tm);
 
