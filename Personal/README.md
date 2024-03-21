@@ -37,6 +37,8 @@ Monitor: CoolerMaster GP27Q
 
 **[mpv-menu-plugin](https://github.com/tsl0922/mpv-menu-plugin)**
 
+**[autodeint](https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autodeint.lua)**
+
 ## Shaders used
 
 **[NLS#](https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl)**
