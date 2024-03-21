@@ -26,7 +26,7 @@ var decide_to_change_speed = function(name, current_cache_seconds)
   
   if (current_cache_seconds >= options['enable_faster_speed_over_cache_seconds'])
   {
-    set_speed(options['faster_speed'])
+    set_speed(current_cache_seconds)
   }
   
   else if (current_cache_seconds <= options['enable_slower_speed_under_cache_seconds'])
