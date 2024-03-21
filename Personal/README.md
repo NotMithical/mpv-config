@@ -106,3 +106,5 @@ Monitor: CoolerMaster GP27Q
 **[AiUpscale](https://github.com/hooke007/MPV_lazy/tree/main/portable_config/shaders)**
 
 **[Luma Downscalers](https://github.com/Artoriuz/glsl-luma-downscaler)**
+
+**[Channel Inspector](https://github.com/Artoriuz/glsl-channel-inspector)**
