@@ -3,7 +3,7 @@
 //
 // --Parameters Summary --
 // HorizontalStretch and VerticalStretch:
-//		Adjust balance between Horizontal and Vertical Stretching. Combined values of each should add up to 1.
+//		Adjust balance between Horizontal and Vertical Stretching. Values will be normalized to total to 1.0, otherwise distortion will occur in the center of the image.
 // CropAmount:
 //		Crop image edges. Raising this value results in loss of content but results in less stretching.
 // BarsAmount:
@@ -41,8 +41,12 @@
 
 vec2 stretch(vec2 pos, float h_par, float v_par)
 {
-	float h_m_stretch = pow(h_par, HorizontalStretch),
-		  v_m_stretch = pow(v_par, VerticalStretch),
+	float BarsAmountNorm = BarsAmount * 2.5,
+		  HorizontalStretchNorm = HorizontalStretch * (1 / (HorizontalStretch + VerticalStretch)),
+		  VerticalStretchNorm = VerticalStretch * (1 / (HorizontalStretch + VerticalStretch));
+
+	float h_m_stretch = pow(h_par, HorizontalStretchNorm),
+		  v_m_stretch = pow(v_par, VerticalStretchNorm),
 		  x = pos.x - 0.5,
 		  y = pos.y - 0.5;
 		  
@@ -56,12 +60,12 @@ vec2 stretch(vec2 pos, float h_par, float v_par)
 	//Map x & y coordinates to themselves with a curve, taking into account cropping and padding
 	if (h_par < 1)
 	{		
-		return vec2(mix(x * abs(x) * (2 - (CropAmount * 2)), x, h_m_stretch) + 0.5, mix(y * abs(y) * (2 - (BarsAmount * 2)), y, v_m_stretch) + 0.5);
+		return vec2(mix(x * abs(x) * (2 - (CropAmount * 2)), x, h_m_stretch) + 0.5, mix(y * abs(y) * (2 - (BarsAmountNorm * 2)), y, v_m_stretch) + 0.5);
 	}
 	
 	else
 	{
-		return vec2(mix(x * abs(x) * (2 - (BarsAmount * 2)), x, h_m_stretch) + 0.5, mix(y * abs(y) * (2 - (CropAmount * 2)), y, v_m_stretch) + 0.5);
+		return vec2(mix(x * abs(x) * (2 - (BarsAmountNorm * 2)), x, h_m_stretch) + 0.5, mix(y * abs(y) * (2 - (CropAmount * 2)), y, v_m_stretch) + 0.5);
 	}
 }
 
