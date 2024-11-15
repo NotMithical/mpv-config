@@ -41,9 +41,9 @@
 
 vec2 stretch(vec2 pos, float h_par, float v_par)
 {
-	float BarsAmountNorm = BarsAmount * 2.5,
-		  HorizontalStretchNorm = HorizontalStretch * (1 / (HorizontalStretch + VerticalStretch)),
-		  VerticalStretchNorm = VerticalStretch * (1 / (HorizontalStretch + VerticalStretch));
+	float BarsAmountNorm = BarsAmount * 2.5;
+	float HorizontalStretchNorm = HorizontalStretch * (1 / (HorizontalStretch + VerticalStretch));
+	float VerticalStretchNorm = VerticalStretch * (1 / (HorizontalStretch + VerticalStretch));
 
 	float h_m_stretch = pow(h_par, HorizontalStretchNorm),
 		  v_m_stretch = pow(v_par, VerticalStretchNorm),
