@@ -20,52 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+//!PARAM chroma_offset_x
+//!TYPE float
+0.0
+
+//!PARAM chroma_offset_y
+//!TYPE float
+0.0
+
 //!HOOK CHROMA
 //!BIND LUMA
 //!BIND HOOKED
 //!SAVE LUMA_LOWRES
 //!WIDTH CHROMA.w
-//!HEIGHT LUMA.h
-//!WHEN CHROMA.w LUMA.w <
-//!DESC Chroma From Luma Prediction (Downscaling Luma 1st Step)
-
-vec4 hook() {
-    float factor = ceil(LUMA_size.x / HOOKED_size.x);
-    int start = int(ceil(-factor / 2.0 - 0.5));
-    int end = int(floor(factor / 2.0 - 0.5));
-
-    float output_luma = 0.0;
-    int wt = 0;
-    for (int dx = start; dx <= end; dx++) {
-        output_luma += LUMA_texOff(vec2(dx + 0.5, 0.0)).x;
-        wt++;
-    }
-    vec4 output_pix = vec4(output_luma / float(wt), 0.0, 0.0, 1.0);
-    return output_pix;
-}
-
-//!HOOK CHROMA
-//!BIND LUMA_LOWRES
-//!BIND HOOKED
-//!SAVE LUMA_LOWRES
-//!WIDTH CHROMA.w
 //!HEIGHT CHROMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC Chroma From Luma Prediction (Downscaling Luma 2nd Step)
+//!DESC Chroma From Luma Prediction (Downscaling Luma)
 
 vec4 hook() {
-    float factor = ceil(LUMA_LOWRES_size.y / HOOKED_size.y);
-    int start = int(ceil(-factor / 2.0 - 0.5));
-    int end = int(floor(factor / 2.0 - 0.5));
-
-    float output_luma = 0.0;
-    int wt = 0;
-    for (int dy = start; dy <= end; dy++) {
-        output_luma += LUMA_LOWRES_texOff(vec2(0.0, dy + 0.5)).x;
-        wt++;
-    }
-    vec4 output_pix = vec4(output_luma / float(wt), 0.0, 0.0, 1.0);
-    return output_pix;
+    return LUMA_texOff(vec2(chroma_offset_x, chroma_offset_y));
 }
 
 //!HOOK CHROMA
@@ -96,8 +69,8 @@ float comp_wd(vec2 v) {
 
 vec4 hook() {
     float ar_strength = 0.8;
-    vec2 mix_coeff = vec2(1.0);
-    vec2 corr_exponent = vec2(8.0);
+    vec2 mix_coeff = vec2(0.8);
+    vec2 corr_exponent = vec2(4.0);
 
     vec4 output_pix = vec4(0.0, 0.0, 0.0, 1.0);
     float luma_zero = LUMA_texOff(0.0).x;
@@ -276,5 +249,44 @@ vec4 hook() {
 #endif
 
     output_pix.xy = clamp(output_pix.xy, 0.0, 1.0);
+    return output_pix;
+}
+
+//!PARAM distance_coeff
+//!TYPE float
+//!MINIMUM 0.0
+2.0
+
+//!PARAM intensity_coeff
+//!TYPE float
+//!MINIMUM 0.0
+128.0
+
+//!HOOK CHROMA
+//!BIND CHROMA
+//!BIND LUMA
+//!DESC Chroma From Luma Prediction (Smoothing Chroma)
+
+float comp_w(vec2 spatial_distance, float intensity_distance) {
+    return max(100.0 * exp(-distance_coeff * pow(length(spatial_distance), 2.0) - intensity_coeff * pow(intensity_distance, 2.0)), 1e-32);
+}
+
+vec4 hook() {
+    vec4 output_pix = vec4(0.0, 0.0, 0.0, 1.0);
+    float luma_zero = LUMA_texOff(0).x;
+    float wt = 0.0;
+    vec2 ct = vec2(0.0);
+
+    for (int i = -1; i < 2; i++) {
+        for (int j = -1; j < 2; j++) {
+            vec2 chroma_pixels = CHROMA_texOff(vec2(i, j)).xy;
+            float luma_pixels = LUMA_texOff(vec2(i, j)).x;
+            float w = comp_w(vec2(i, j), luma_zero - luma_pixels);
+            wt += w;
+            ct += w * chroma_pixels;
+        }
+    }
+
+    output_pix.xy = clamp(ct / wt, 0.0, 1.0);
     return output_pix;
 }

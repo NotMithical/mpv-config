@@ -30,18 +30,18 @@
 //!DESC Joint Bilateral (Downscaling Luma)
 
 vec4 hook() {
-    return LUMA_texOff(0.0);
+    return LUMA_texOff(vec2(-0.5, 0.0));
 }
 
 //!PARAM distance_coeff
 //!TYPE float
 //!MINIMUM 0.0
-2.5
+2.0
 
 //!PARAM intensity_coeff
 //!TYPE float
 //!MINIMUM 0.0
-256.0
+128.0
 
 //!HOOK CHROMA
 //!BIND LUMA
@@ -54,7 +54,7 @@ vec4 hook() {
 //!DESC Joint Bilateral (Upscaling Chroma)
 
 float comp_w(vec2 spatial_distance, float intensity_distance) {
-    return max(exp(-distance_coeff * pow(length(spatial_distance), 2.0) - intensity_coeff * pow(intensity_distance, 2.0)), 1e-32);
+    return max(100.0 * exp(-distance_coeff * pow(length(spatial_distance), 2.0) - intensity_coeff * pow(intensity_distance, 2.0)), 1e-32);
 }
 
 vec4 hook() {
