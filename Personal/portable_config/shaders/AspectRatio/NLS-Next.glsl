@@ -1,5 +1,5 @@
-//	NLS# by NotMithical
-//	https://github.com/NotMithical/mpv-config/blob/main/Personal/portable_config/shaders/AspectRatio/NLS%23.glsl
+//	NLS-Next by NotMithical
+//	https://github.com/NotMithical/MPV-NLS-Next/blob/main/NLS-Next.glsl
 //
 // --Parameters Summary --
 // HorizontalStretch and VerticalStretch:
@@ -10,6 +10,8 @@
 //		Scale the image down and add padding in the form of black bars. Raising this value results in less stretching.
 // CenterProtect:
 //		Changes the curve for stretching. Higher values apply more stretching towards the edges of the screen. Currently experimental; I'm still figuring out the math for this whole thing and it turns out the padding, cropping, and center protection affect each other a fair bit.
+//
+// dest_height & dest_width are set by the NLS-Next.lua helper script. Changing their values here will have no effect.
 //
 // The defaults will distribute stretching across all edges and will not crop or pad the image.
 
@@ -43,7 +45,29 @@
 //!MAXIMUM 6.0
 1.0
 
-//!HOOK MAINPRESUB
+//!PARAM dest_width
+//!TYPE int
+//!MINIMUM 0
+//!MAXIMUM 99999
+0
+
+//!PARAM dest_height
+//!TYPE int
+//!MINIMUM 0
+//!MAXIMUM 99999
+0
+
+//!DESC NLS prescaling
+//!HOOK MAIN
+//!BIND MAIN
+//!WIDTH dest_width
+//!HEIGHT dest_height
+
+vec4 hook() {
+    return MAIN_texOff(0);
+}
+
+//!HOOK MAIN
 //!BIND HOOKED
 //!DESC Bidirectional Nonlinear Stretch
 
@@ -73,7 +97,7 @@ vec4 hook() {
 		  v_par = sar / dar;
 
 	vec2 stretchedPos = stretch(HOOKED_pos, h_par, v_par);
-	
+
 	// Check what pixels are outside the target boundaries
 	bool outOfBounds = ((any(lessThan(stretchedPos, vec2(0.0))) || any(greaterThan(stretchedPos, vec2(1.0)))) ? true : false);
 
